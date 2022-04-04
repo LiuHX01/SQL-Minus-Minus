@@ -50,17 +50,16 @@ ses = {'(': 1,
        ',': 3
        }
 
-in_str = "SELECT sc.SId,sc.DId, sc.score ,t1.avgscore FROM sc LEFT JOIN (select sc.SId, AVG(sc.score) AS avgscore FROM sc GROUP BY sc.SId) AS t1 ON sc.SId =t1.SId ORDER BY t1.avgscore DESC"
 # -------------------------------------------------------------------------------
 # 字符串预处理
-in_str = in_str.strip()
-in_str = in_str.split()
-str = ''
-for i in in_str:
-    if i != '':
-        i.strip()
-        str = str + i + ' '
-str = ' ' + str
+# in_str = in_str.strip()
+# in_str = in_str.split()
+# str = ''
+# for i in in_str:
+#     if i != '':
+#         i.strip()
+#         str = str + i + ' '
+# str = ' ' + str
 
 # -------------------------------------------------------------------------------
 # 一些函数
@@ -115,7 +114,7 @@ def Print(tmp, isStr=False):
 
 
 # -------------------------------------------------------------------------------
-if __name__ == '__main__':
+def main(str):
     tmp = ''
     isStr = False
     lPair = 0
