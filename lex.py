@@ -51,17 +51,6 @@ ses = {'(': 1,
        }
 
 # -------------------------------------------------------------------------------
-# 字符串预处理
-# in_str = in_str.strip()
-# in_str = in_str.split()
-# str = ''
-# for i in in_str:
-#     if i != '':
-#         i.strip()
-#         str = str + i + ' '
-# str = ' ' + str
-
-# -------------------------------------------------------------------------------
 # 一些函数
 def checkIDN(str):
     if str[0] not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_':
