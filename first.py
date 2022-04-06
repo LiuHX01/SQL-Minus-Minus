@@ -14,22 +14,24 @@
 # Vn = ['E','EE','T','TT','F']
 
 
-# 以下字典格式形如 {'functionCall'=['AVG', 'MAX']}
+# 字典格式形如 {'functionCall'=['AVG', 'MAX']}
 Grammar = {}
 First = {}
 Vn = []
+Start_flag = 'root'
 
-
-def pre_proc(str):
-    str = str.partition('.')[2].strip()
-    str = str.partition(' -> ')
-    return str[0], str[2]
+def pre_proc(in_str):
+    in_str = in_str.partition('.')[2].strip()
+    in_str = in_str.partition(' -> ')
+    return in_str[0], in_str[2]
 
 
 def get_grammar():
     with open('./data/grammar.txt', 'r', encoding='utf-8') as f:
         it = f.readlines()
         for g in it:
+            if g[0] == '/':
+                continue
             l, r = pre_proc(g)
             # 认为所有在左侧的都是非终结符 其他都是终结符
             if l not in Vn:
@@ -40,7 +42,7 @@ def get_grammar():
                 Grammar[l] = [r]
 
     # with open('./data/new_grammar.txt', 'w', encoding='utf-8') as f:
-    #     f.write(str(grammar))
+    #     f.write(str(Grammar))
 
 
 def get_first():
@@ -93,6 +95,12 @@ def get_first():
             len2 = len(First.get(left))
             if len1 != len2:
                 f = 1
+
+
+# 求一个字符串的first
+def get_str_first(in_str):
+    pass
+
 
 
 def main():
