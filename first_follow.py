@@ -4,23 +4,29 @@ First = {}
 First_str = {}
 Follow = {}
 Vn = []
-Start_flag = 'E'
+Start_flag = 'A'
 
 
 # 两个测试用例 结果都对 怀疑指导书上例子错了
-# Grammar = {'A':['B C c','g D B'],
-#            'B':['b C D E', '$'],
-#            'C':['D a B','c a'],
-#            'D':['d D', '$'],
-#            'E':['g A f','c']} # {'root': ['dmlStatement']}
-Grammar = {
-    'E':['T EE'],
-    'EE':['+ T EE', '$'],
-    'T':['F TT'],
-    'TT':['* F TT', '$'],
-    'F':['( E )','i']
-}
-Vn = ['E','EE','T','TT','F']
+Grammar = {'A':['B C c','g D B'],
+           'B':['b C D E', '$'],
+           'C':['D a B','c a'],
+           'D':['d D', '$'],
+           'E':['g A f','c']} # {'root': ['dmlStatement']}
+# Grammar = {
+#     'E':['T EE'],
+#     'EE':['+ T EE', '$'],
+#     'T':['F TT'],
+#     'TT':['* F TT', '$'],
+#     'F':['( E )','i']
+# }
+# Grammar = {
+#     'S': ['a A B b c d', '$'],
+#     'A': ['A S d', '$'],
+#     'B': ['e C', 'S A h', '$'],
+#     'C': ['S f', 'C g', '$']
+# }
+Vn = ['A','B','C', 'D', 'E']
 
 
 def pre_proc(in_str):
@@ -104,7 +110,7 @@ def get_first():
 # input:形如'AA BB CC'
 def get_str_first(in_str):
     res = []
-    l_str = in_str.split(' ')
+    l_str = in_str.split(' ') # ['Cc']
     for i, each in enumerate(l_str):
         # 在这里处理一下终结符的First集
         if each not in Vn:
@@ -120,7 +126,7 @@ def get_str_first(in_str):
         First_str[in_str] = tmp
         if '$' not in First[each]:
             break
-    return First_str[in_str]
+    # return First_str[in_str]
 
 
 def get_follow():
@@ -146,26 +152,28 @@ def get_follow():
                         if s != vn:
                             if ff == 0:
                                 continue
-                            # 当ff==1
+                            # 当ff==1 也就是前一个是所求vn
                             else:
-                                # s 是 GA 的 A 将First(A)除ε加入follow
-                                if s in Vn:
-                                    # 我觉得不存在First==None的情况
-                                    tmp1 = First.get(s).copy()
-                                    if '$' in tmp1:
-                                        tmp1.remove('$')
-                                    tmp2 = Follow.get(vn) if Follow.get(vn) is not None else []
-                                    tmp = list(set(tmp1 + tmp2))
-                                    Follow[vn] = tmp
-                                    ff = 0
+                                # cnmd β是到最后的长串
+                                # 先将后面的First去ε加入follow
+                                long_s = ''
+                                for j in range(i, len(each)):
+                                    long_s += each[j]
+                                    if j != len(each) - 1:
+                                        long_s += ' '
+                                get_str_first(long_s)
+                                tmp1 = First_str.get(long_s).copy()# if First_str.get(long_s) is not None else []
+                                # 不是None 最多是[]
+                                tmp2 = Follow.get(vn)
+                                if '$' in tmp1:
+                                    tmp1.remove('$')
+                                    # 将follow(左)加入follow(vn)
+                                    tmp3 = Follow.get(k)
+                                    tmp2 += tmp3
+                                tmp2 = list(set(tmp2 + tmp1))
+                                Follow[vn] = tmp2
+                                ff = 0
 
-                                # s 是 Ga 的 a 直接加入G(vn)的follow中
-                                else:
-                                    tmp = Follow.get(vn).copy() if Follow.get(vn) is not None else []
-                                    if s not in tmp:
-                                        tmp.append(s)
-                                    Follow[vn] = tmp
-                                    ff = 0
                         # 遇到该vn
                         elif s == vn:
                             # 最后遇到 将Follow(k)中的全部内容加到Follow(vn)
@@ -181,13 +189,15 @@ def get_follow():
             len2 = len(Follow[vn])
             if len1 != len2:
                 f = 1
+        # print(Follow)
+
     pass
 
 
 def main():
     # get_grammar()
     get_first()
-    print(First)
+    # print(First)
     get_follow()
     print(Follow)
     # with open('./data/first.txt', 'w', encoding='utf-8') as f:
