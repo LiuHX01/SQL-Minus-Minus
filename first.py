@@ -1,24 +1,26 @@
+# 字典格式形如 {'functionCall'=['AVG', 'MAX']}
+Grammar = {}
+First = {}
+First_str = {}
+Vn = []
+Start_flag = 'root'
+
+
 # 两个测试用例 结果都对 怀疑指导书上例子错了
 # Grammar = {'A':['B C c','g D B'],
 #            'B':['b C D E', '$'],
 #            'C':['D a B','c a'],
 #            'D':['d D', '$'],
 #            'E':['g A f','c']} # {'root': ['dmlStatement']}
-# Grammar = {
-#     'E':['T EE'],
-#     'EE':['+ T EE', '$'],
-#     'T':['F TT'],
-#     'TT':['* F TT', '$'],
-#     'F':['( E )','id']
-# }
-# Vn = ['E','EE','T','TT','F']
+Grammar = {
+    'E':['T EE'],
+    'EE':['+ T EE', '$'],
+    'T':['F TT'],
+    'TT':['* F TT', '$'],
+    'F':['( E )','i']
+}
+Vn = ['E','EE','T','TT','F']
 
-
-# 字典格式形如 {'functionCall'=['AVG', 'MAX']}
-Grammar = {}
-First = {}
-Vn = []
-Start_flag = 'root'
 
 def pre_proc(in_str):
     in_str = in_str.partition('.')[2].strip()
@@ -97,17 +99,35 @@ def get_first():
                 f = 1
 
 
-# 求一个字符串的first
+# 求一个串的first
+# input:形如'AA BB CC'
 def get_str_first(in_str):
-    pass
+    res = []
+    l_str = in_str.split(' ')
+    for i, each in enumerate(l_str):
+        # 在这里处理一下终结符的First集
+        if each not in Vn:
+            First[each] = [each]
+        tmp1 = First_str.get(in_str).copy() if First_str.get(in_str) is not None else []
+        tmp2 = First[each].copy()
+        if '$' in tmp2:
+            if i != len(l_str) - 1:
+                tmp2.remove('$')
+        tmp = tmp1 + tmp2
+        if len(tmp) > 1:
+            tmp = list(set(tmp))
+        First_str[in_str] = tmp
+        if '$' not in First[each]:
+            break
 
 
 
 def main():
-    get_grammar()
+    # get_grammar()
     get_first()
     print(First)
-
+    get_str_first('EE E')
+    print(First_str)
     # with open('./data/first.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(First))
 
