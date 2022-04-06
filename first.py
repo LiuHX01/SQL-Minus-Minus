@@ -1,13 +1,23 @@
-import sys
+# 两个测试用例 结果都对 怀疑指导书上例子错了
+# Grammar = {'A':['B C c','g D B'],
+#            'B':['b C D E', '$'],
+#            'C':['D a B','c a'],
+#            'D':['d D', '$'],
+#            'E':['g A f','c']} # {'root': ['dmlStatement']}
+# Grammar = {
+#     'E':['T EE'],
+#     'EE':['+ T EE', '$'],
+#     'T':['F TT'],
+#     'TT':['* F TT', '$'],
+#     'F':['( E )','id']
+# }
+# Vn = ['E','EE','T','TT','F']
 
-# Grammar = {'S':['a A B b c d', '$'],
-#            'A':['A S d', '$'],
-#            'B':['e C', 'S A h', '$'],
-#            'C':['S f', 'C g', '$']} # {'root': ['dmlStatement']}
+
+# 以下字典格式形如 {'functionCall'=['AVG', 'MAX']}
 Grammar = {}
-First = {} # {'functionCall'=['AVG', 'MAX']}
+First = {}
 Vn = []
-# Vn = ['S','A','B','C']
 
 
 def pre_proc(str):
@@ -29,91 +39,69 @@ def get_grammar():
             else:
                 Grammar[l] = [r]
 
-
     # with open('./data/new_grammar.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(grammar))
 
 
-
-
-
-
-
-
-
-
-
 def get_first():
+    for vn in Vn:
+        First[vn] = []
+
     f = 1
     # 当没有改变时停止
     while f:
-        print(f)
         f = 0
         for left, v_grammar in Grammar.items():
-            # 得到 一个映射
+            len1 = len(First.get(left))
+            # 得到 每一个映射
             # S->['a A', 'b']
             for each_grammar in v_grammar:
-                # S->'a A' S->b
+                # S->'a A'
                 each_grammar = each_grammar.split(' ')
-                # S->['a','A'] S->['b']
+                # S->['a','A']
                 # 对每个单独规则的单独项，如aA的a和A
                 for i, g in enumerate(each_grammar):
                     # 非终结符 left->g(S->A)
                     if g in Vn:
                         tmp1 = First.get(left) if First.get(left) is not None else []
-                        tmp2 = First.get(g) if First.get(g) is not None else []
+                        tmp2 = First.get(g).copy() if First.get(g) is not None else []
+                        # 是一连串非终极符 则中间的去掉空 结尾的保留空
+                        if '$' in tmp2:
+                            if i != len(each_grammar) - 1:
+                                tmp2.remove('$')
                         tmp = tmp1 + tmp2
+
                         if len(tmp) > 1:
                             tmp = list(set(tmp))
-                            tmp.sort()
-                        if len(tmp) != len(First[left]):
-                            f = 1
 
                         First[left] = tmp
-                        tmp = ''
                         if '$' not in First[g]:
                             break
-                    # 终结符或$
+                    # 终结符或$ 直接加入并结束
                     else:
                         tmp1 = First.get(left) if First.get(left) is not None else []
                         tmp2 = [g]
                         tmp = tmp1 + tmp2
+
                         if len(tmp) > 1:
                             tmp = list(set(tmp))
-                            tmp.sort()
-                        if len(tmp) != len(First[left]):
-                            f = 1
+
                         First[left] = tmp
-                        tmp = ''
                         break
 
-
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            # 操作前后长度对比，因为只可能往里加
+            len2 = len(First.get(left))
+            if len1 != len2:
+                f = 1
 
 
 def main():
     get_grammar()
-    for vn in Vn:
-        First[vn] = []
     get_first()
     print(First)
+
+    # with open('./data/first.txt', 'w', encoding='utf-8') as f:
+    #     f.write(str(First))
 
 
 main()
