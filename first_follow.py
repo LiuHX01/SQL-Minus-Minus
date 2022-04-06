@@ -2,8 +2,9 @@
 Grammar = {}
 First = {}
 First_str = {}
+Follow = {}
 Vn = []
-Start_flag = 'root'
+Start_flag = 'E'
 
 
 # 两个测试用例 结果都对 怀疑指导书上例子错了
@@ -119,15 +120,76 @@ def get_str_first(in_str):
         First_str[in_str] = tmp
         if '$' not in First[each]:
             break
+    return First_str[in_str]
 
+
+def get_follow():
+    for vn in Vn:
+        Follow[vn] = []
+
+    Follow[Start_flag] = ['$']
+    f = 1
+    while f:
+        f = 0
+        # 对于每个终结符vn 比如要找G的
+        for vn in Vn:
+            len1 = len(Follow[vn])
+            # 在每个Grammar里找 形如 {'functionCall'=['AVG G', 'MAX']}
+            for k, v in Grammar.items():
+                # 对functionCall -> 'AVG G'
+                for each in v:
+                    # functionCall -> ['AVG','G']
+                    each = each.split(' ')
+                    ff = 0 # 假设 k -> G a A... 求 vn
+                    for i, s in enumerate(each):
+                        # AVG不是该vn
+                        if s != vn:
+                            if ff == 0:
+                                continue
+                            # 当ff==1
+                            else:
+                                # s 是 GA 的 A 将First(A)除ε加入follow
+                                if s in Vn:
+                                    # 我觉得不存在First==None的情况
+                                    tmp1 = First.get(s).copy()
+                                    if '$' in tmp1:
+                                        tmp1.remove('$')
+                                    tmp2 = Follow.get(vn) if Follow.get(vn) is not None else []
+                                    tmp = list(set(tmp1 + tmp2))
+                                    Follow[vn] = tmp
+                                    ff = 0
+
+                                # s 是 Ga 的 a 直接加入G(vn)的follow中
+                                else:
+                                    tmp = Follow.get(vn).copy() if Follow.get(vn) is not None else []
+                                    if s not in tmp:
+                                        tmp.append(s)
+                                    Follow[vn] = tmp
+                                    ff = 0
+                        # 遇到该vn
+                        elif s == vn:
+                            # 最后遇到 将Follow(k)中的全部内容加到Follow(vn)
+                            if i == len(each) - 1:
+                                tmp1 = Follow.get(k).copy() if Follow.get(k) is not None else []
+                                tmp2 = Follow.get(vn).copy() if Follow.get(vn) is not None else []
+                                tmp = list(set(tmp1 + tmp2))
+                                Follow[vn] = tmp
+                                pass
+                            # 不是最后一个 要处理下一个
+                            else:
+                                ff = 1
+            len2 = len(Follow[vn])
+            if len1 != len2:
+                f = 1
+    pass
 
 
 def main():
     # get_grammar()
     get_first()
     print(First)
-    get_str_first('EE E')
-    print(First_str)
+    get_follow()
+    print(Follow)
     # with open('./data/first.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(First))
 
