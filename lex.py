@@ -1,5 +1,7 @@
 import sys
 
+Token = []
+
 keywords = {'SELECT': 1,
             'FROM': 2,
             'WHERE': 3,
@@ -50,7 +52,14 @@ ses = {'(': 1,
        ',': 3
        }
 
+
 # -------------------------------------------------------------------------------
+def deal(in_str):
+    # a	<IDN,a>
+    tk = in_str.partition('\t')
+    Token.append([tk[0], tk[2].rpartition(',')[0][1:]])
+
+
 # 一些函数
 def checkIDN(str):
     if str[0] not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_':
@@ -85,18 +94,25 @@ def Print(tmp, isStr=False):
     if tmp != '':
         if isStr:
             print(f'{tmp}\t<STR,{tmp}>')
+            deal(f'{tmp}\t<STR,{tmp}>')
         elif keywords.get(tmp) is not None:
             print(f'{tmp}\t<KW,{keywords.get(tmp)}>')
+            deal(f'{tmp}\t<KW,{keywords.get(tmp)}>')
         elif ops.get(tmp) is not None:
             print(f'{tmp}\t<OP,{ops.get(tmp)}>')
+            deal(f'{tmp}\t<OP,{ops.get(tmp)}>')
         elif tmp.isdigit():
             print(f'{tmp}\t<INT,{tmp}>')
+            deal(f'{tmp}\t<INT,{tmp}>')
         elif tmp.replace('.', '').isdigit():
             print(f'{tmp}\t<FLOAT,{tmp}>')
+            deal(f'{tmp}\t<FLOAT,{tmp}>')
         elif checkHEX(tmp):
             print(f'{tmp}\t<INT,{tmp}>')
+            deal(f'{tmp}\t<INT,{tmp}>')
         elif checkIDN(tmp):
             print(f'{tmp}\t<IDN,{tmp}>')
+            deal(f'{tmp}\t<IDN,{tmp}>')
         else:
             print('不可能到这的')
             sys.exit()
@@ -121,7 +137,9 @@ def main(str):
                 tmp += c
             else:
                 print(f'{tmp}\t<IDN,{tmp}>')
+                deal(f'{tmp}\t<IDN,{tmp}>')
                 print(f'.\t<OP,13>')
+                deal(f'.\t<OP,13>')
                 tmp = ''
 
         # 部分连在一起的运算符 除了点
@@ -181,3 +199,5 @@ def main(str):
 
         else:
             tmp += c
+
+    return Token

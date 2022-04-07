@@ -4,15 +4,15 @@ First = {}
 First_str = {}
 Follow = {}
 Vn = []
-Start_flag = 'A'
+Start_flag = 'root'
 
 
 # 两个测试用例 结果都对 怀疑指导书上例子错了
-Grammar = {'A':['B C c','g D B'],
-           'B':['b C D E', '$'],
-           'C':['D a B','c a'],
-           'D':['d D', '$'],
-           'E':['g A f','c']} # {'root': ['dmlStatement']}
+# Grammar = {'A':['B C c','g D B'],
+#            'B':['b C D E', '$'],
+#            'C':['D a B','c a'],
+#            'D':['d D', '$'],
+#            'E':['g A f','c']} # {'root': ['dmlStatement']}
 # Grammar = {
 #     'E':['T EE'],
 #     'EE':['+ T EE', '$'],
@@ -26,7 +26,7 @@ Grammar = {'A':['B C c','g D B'],
 #     'B': ['e C', 'S A h', '$'],
 #     'C': ['S f', 'C g', '$']
 # }
-Vn = ['A','B','C', 'D', 'E']
+# Vn = ['A','B','C', 'D', 'E']
 
 
 def pre_proc(in_str):
@@ -76,8 +76,9 @@ def get_first():
                     if g in Vn:
                         tmp1 = First.get(left) if First.get(left) is not None else []
                         tmp2 = First.get(g).copy() if First.get(g) is not None else []
-                        # 是一连串非终极符 则中间的去掉空 结尾的保留空
+                        # 是一连串非终结符 则中间的去掉空 结尾的保留空
                         if '$' in tmp2:
+                            # 如果所有的First都有ε
                             if i != len(each_grammar) - 1:
                                 tmp2.remove('$')
                         tmp = tmp1 + tmp2
@@ -108,8 +109,8 @@ def get_first():
 
 # 求一个串的first
 # input:形如'AA BB CC'
+# return ['a','$']
 def get_str_first(in_str):
-    res = []
     l_str = in_str.split(' ') # ['Cc']
     for i, each in enumerate(l_str):
         # 在这里处理一下终结符的First集
@@ -126,7 +127,7 @@ def get_str_first(in_str):
         First_str[in_str] = tmp
         if '$' not in First[each]:
             break
-    # return First_str[in_str]
+    return First_str[in_str]
 
 
 def get_follow():
@@ -195,13 +196,12 @@ def get_follow():
 
 
 def main():
-    # get_grammar()
+    get_grammar()
     get_first()
     # print(First)
     get_follow()
-    print(Follow)
+    # print(Follow)
     # with open('./data/first.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(First))
 
-
-main()
+    return Vn, Grammar, First, Follow
