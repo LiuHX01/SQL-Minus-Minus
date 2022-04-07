@@ -2,6 +2,7 @@ import lex
 import common
 import first_follow
 import analysis_table
+import final
 
 Token = []
 First = {}
@@ -18,4 +19,7 @@ if __name__ == '__main__':
 
     Vn, Grammar, First, Follow = first_follow.main()
     Grammar_2, M = analysis_table.main(Vn, Follow)
+    # print(Token)
     print(M)
+
+    final.main(Token, M)
