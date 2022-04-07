@@ -26,7 +26,7 @@ def reduce(Token, M):
 
             state = ''
             while state != 'move':
-                # print(stack)
+                print(stack)
                 stack_top = stack.pop()
                 # 不相等 说明还得规约
                 if stack_top != todeal:

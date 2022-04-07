@@ -1,1 +1,1 @@
-SELECT Websites.id, Websites.name, access_log.count, access_log.date FROM Websites JOIN access_log ON Websites.id=access_log.site_id;
+SELECT  columnlist FROM  tablelist WHERE  condition GROUP BY columnlist HAVING condition ORDER BY columnlist;
