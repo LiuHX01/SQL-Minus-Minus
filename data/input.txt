@@ -1,1 +1,1 @@
-SELECT t.a FROM t WHERE ( t.c) > 0 AND t.d = 6.0 GROUP BY t.a
+SELECT t.a FROM t WHERE ( t.c) > 0 AND t.d = 'asd' GROUP BY t.a

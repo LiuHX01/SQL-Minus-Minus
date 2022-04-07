@@ -18,7 +18,10 @@ def reduce(Token, M):
                 todeal = in_str
             # 否则以类型代替
             else:
+                # 能不能统一嗷
                 todeal = in_type
+                if in_type == 'STR':
+                    todeal = 'STRING'
 
             state = ''
             while state != 'move':
