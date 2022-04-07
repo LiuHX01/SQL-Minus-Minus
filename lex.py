@@ -28,7 +28,8 @@ keywords = {'SELECT': 1,
             'FALSE': 24,
             'IS': 25,
             'NOT': 26,
-            'NULL': 27
+            'NULL': 27,
+            'ON': 28
             }
 
 ops = {'=': 1,
@@ -173,6 +174,7 @@ def main(str):
         # 左右括号 逗号
         elif (c == '(' or c == ')' or c == ',') and isStr == False:
             Print(tmp)
+            deal(f'{c}\t<SE,{ses.get(c)}>')
             if c == '(':
                 lPair += 1
                 if i == len(str) - 1 and lPair > 0:

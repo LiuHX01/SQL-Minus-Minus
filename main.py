@@ -14,6 +14,8 @@ Grammar_2 = {}
 if __name__ == '__main__':
     with open('./data/input.txt', 'r', encoding='utf-8') as f:
         sql = f.readline()
+        if sql[-1] == ';':
+            sql = sql.replace(';', '')
         sql = common.pre_proc(sql)
         Token = lex.main(sql)
 
@@ -27,7 +29,7 @@ if __name__ == '__main__':
     # print(Token)
     print('[[[M]]]')
     print(M)
-
+    print(Token)
     final.main(Token, M)
 
     print('圆满完成')

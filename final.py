@@ -12,6 +12,7 @@ def reduce(Token, M):
         f = 0
         # 对于Token中每个
         for i, [in_str, in_type] in enumerate(Token):
+            print(in_str, in_type)
             # 是关键字、运算符、界符，输入符号是本身
             todeal = ''
             if in_type == 'KW' or in_type == 'OP' or in_type == 'SE':
@@ -35,6 +36,7 @@ def reduce(Token, M):
                         tmp_list = M[(stack_top, todeal)]
                     except:
                         print(f'ERROR:不匹配，栈顶:{stack_top}   终结符:{todeal}')
+                        print(f'栈:{stack}')
                         sys.exit()
                     # 先入栈
                     right_str_list = tmp_list[1].split(' ')
