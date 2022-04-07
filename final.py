@@ -30,7 +30,8 @@ def reduce(Token, M):
                     # 先入栈
                     right_str_list = tmp_list[1].split(' ')
                     for each in reversed(right_str_list):
-                        stack.append(each)
+                        if each != '$':
+                            stack.append(each)
 
                     rule_num = tmp_list[2]
                     print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal}\t{state}')
