@@ -1,4 +1,6 @@
 # list 模拟栈
+import sys
+
 stack = ['root']
 
 # M形如
@@ -26,7 +28,11 @@ def reduce(Token, M):
                 if stack_top != todeal:
                     state = 'reduction'
                     # 得到['selectStatement', 'querySpecification unionStatements', '6']
-                    tmp_list = M[(stack_top, todeal)]
+                    try:
+                        tmp_list = M[(stack_top, todeal)]
+                    except:
+                        print(f'stacktop:{stack_top}   todeal:{todeal}')
+                        sys.exit()
                     # 先入栈
                     right_str_list = tmp_list[1].split(' ')
                     for each in reversed(right_str_list):

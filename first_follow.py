@@ -38,10 +38,15 @@ def pre_proc(in_str):
 def get_grammar():
     with open('./data/grammar.txt', 'r', encoding='utf-8') as f:
         it = f.readlines()
-        for g in it:
+        # print(type(it))
+        for i, g in enumerate(it):
             if g[0] == '/':
                 continue
             l, r = pre_proc(g)
+            if 'GROUP BY' in r:
+                r = r.replace('GROUP BY', 'GROUPBY')
+            if 'ORDER BY' in r:
+                r = r.replace('ORDER BY', 'ORDERBY')
             # 认为所有在左侧的都是非终结符 其他都是终结符
             if l not in Vn:
                 Vn.append(l)
@@ -49,7 +54,7 @@ def get_grammar():
                 Grammar[l].append(r)
             else:
                 Grammar[l] = [r]
-
+    # print(Grammar)
     # with open('./data/new_grammar.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(Grammar))
 
@@ -198,9 +203,11 @@ def get_follow():
 def main():
     get_grammar()
     get_first()
-    # print(First)
+    print('【【【first】】】')
+    print(First)
     get_follow()
-    # print(Follow)
+    print('【【【follow】】】')
+    print(Follow)
     # with open('./data/first.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(First))
 

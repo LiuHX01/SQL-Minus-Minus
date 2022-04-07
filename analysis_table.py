@@ -25,6 +25,11 @@ def get_grammar_v2():
             tmp2 = tmp1[2].strip().partition(' -> ')
             left = tmp2[0]
             right = tmp2[2]
+            # 我真服了 这个GROUP BY和ORDER BY
+            if 'GROUP BY' in right:
+                right = right.replace('GROUP BY', 'GROUPBY')
+            if 'ORDER BY' in right:
+                right = right.replace('ORDER BY', 'ORDERBY')
             Grammar_v2[(left, seqnum)] = right
     # for each in Grammar_v2.items():
     #     print(each)
