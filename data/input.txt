@@ -1,1 +1,1 @@
-SELECT t.a FROM t WHERE t.a > 0
+SELECT t.a FROM t WHERE t.c > 0

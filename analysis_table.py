@@ -32,9 +32,9 @@ def get_grammar_v2():
 
 # Grammar形如 'dottedId': ['. uid', '$']
 # First,Follow形如 'unionType': ['$', 'ALL', 'DISTINCT']
-def main(Vn, First, Follow):
+def get_M(Vn, Follow):
     # 对文法G的每个产生式A->α k:(左端，序号) v:右端串
-    for k, v in Grammar_v2:
+    for k, v in Grammar_v2.items():
         first_right = get_str_first(v)
         for each in first_right:
             # 遇到终结符
@@ -52,4 +52,8 @@ def main(Vn, First, Follow):
                             M[(k[0], '$')] = [k[0], v, k[1]]
     pass
 
-get_grammar_v2()
+
+def main(Vn, Follow):
+    get_grammar_v2()
+    get_M(Vn, Follow)
+    return Grammar_v2, M
