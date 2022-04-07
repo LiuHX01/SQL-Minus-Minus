@@ -1,1 +1,1 @@
-SELECT t.a FROM t WHERE ( t.c) > 0 AND t.d = 'asd' GROUP BY t.a
+SELECT t.a FROM t WHERE ( t.c) > 0 AND t.d = '_+as.666d' GROUP BY t.a

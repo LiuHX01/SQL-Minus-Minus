@@ -34,7 +34,7 @@ def reduce(Token, M):
                     try:
                         tmp_list = M[(stack_top, todeal)]
                     except:
-                        print(f'stacktop:{stack_top}   todeal:{todeal}')
+                        print(f'ERROR:不匹配，栈顶:{stack_top}   终结符:{todeal}')
                         sys.exit()
                     # 先入栈
                     right_str_list = tmp_list[1].split(' ')
@@ -43,12 +43,22 @@ def reduce(Token, M):
                             stack.append(each)
 
                     rule_num = tmp_list[2]
-                    print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal}\t{state}')
+                    todeal2 = todeal
+                    if todeal == 'GROUPBY':
+                        todeal2 = 'GROUP BY'
+                    if todeal == 'ORDERBY':
+                        todeal2 = 'ORDER BY'
+                    print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal2}\t{state}')
                     cnt += 1
                 # 相等了 可以规约了
                 else:
                     state = 'move'
-                    print(f'{cnt}\t/\t{stack_top}#{todeal}\t{state}')
+                    todeal2 = todeal
+                    if todeal == 'GROUPBY':
+                        todeal2 = 'GROUP BY'
+                    if todeal == 'ORDERBY':
+                        todeal2 = 'ORDER BY'
+                    print(f'{cnt}\t/\t{stack_top}#{todeal2}\t{state}')
                     cnt += 1
         pass
     pass
