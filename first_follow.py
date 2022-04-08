@@ -204,11 +204,11 @@ def get_follow():
 def main():
     get_grammar()
     get_first()
-    print('【【【first】】】')
-    print(First)
+    # print('【【【first】】】')
+    # print(First)
     get_follow()
-    print('【【【follow】】】')
-    print(Follow)
+    # print('【【【follow】】】')
+    # print(Follow)
     # with open('./data/first.txt', 'w', encoding='utf-8') as f:
     #     f.write(str(First))
 
