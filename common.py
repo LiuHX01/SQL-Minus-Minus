@@ -1,3 +1,13 @@
+Grammar = {}
+Token = []
+First = {}
+First_str = {}
+Follow = {}
+Vn = []
+M = {}
+Grammar_v2 = {}
+Start_flag = 'root'
+
 def pre_proc(in_str):
     in_str = in_str.strip()
     in_str = in_str.split()

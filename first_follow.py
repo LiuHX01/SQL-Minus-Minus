@@ -1,10 +1,11 @@
+from common import *
 # 字典格式形如 {'functionCall'=['AVG', 'MAX']}
-Grammar = {}
-First = {}
-First_str = {}
-Follow = {}
-Vn = []
-Start_flag = 'root'
+# Grammar = {}
+# First = {}
+# First_str = {}
+# Follow = {}
+# Vn = []
+# Start_flag = 'root'
 
 
 # 两个测试用例 结果都对 怀疑指导书上例子错了
@@ -29,7 +30,7 @@ Start_flag = 'root'
 # Vn = ['A','B','C', 'D', 'E']
 
 
-def pre_proc(in_str):
+def pre_proc2(in_str):
     in_str = in_str.partition('.')[2].strip()
     in_str = in_str.partition(' -> ')
     return in_str[0], in_str[2]
@@ -42,7 +43,7 @@ def get_grammar():
         for i, g in enumerate(it):
             if g[0] == '/':
                 continue
-            l, r = pre_proc(g)
+            l, r = pre_proc2(g)
             if 'GROUP BY' in r:
                 r = r.replace('GROUP BY', 'GROUPBY')
             if 'ORDER BY' in r:

@@ -1,1 +1,1 @@
-SELECT  columnlist FROM  tablelist WHERE  condition GROUP BY columnlist HAVING condition ORDER BY columnlist;
+SELECT t FROM MyTable WHERE id = 5 ORDER BY 'id'

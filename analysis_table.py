@@ -1,8 +1,9 @@
+from common import *
 from first_follow import get_str_first
 # 预测分析表 {[A,a]:[A,α]}
 #         a非终结符 α产生式右端
-Grammar_v2 = {}
-M = {}
+# Grammar_v2 = {}
+# M = {}
 
 '''
 构造预测分析表
@@ -37,7 +38,7 @@ def get_grammar_v2():
 
 # Grammar形如 'dottedId': ['. uid', '$']
 # First,Follow形如 'unionType': ['$', 'ALL', 'DISTINCT']
-def get_M(Vn, Follow):
+def get_M():
     # 对文法G的每个产生式A->α k:(左端，序号) v:右端串
     for k, v in Grammar_v2.items():
         first_right = get_str_first(v)
@@ -58,7 +59,7 @@ def get_M(Vn, Follow):
     pass
 
 
-def main(Vn, Follow):
+def main():
     get_grammar_v2()
-    get_M(Vn, Follow)
-    return Grammar_v2, M
+    get_M()
+    # return Grammar_v2, M
