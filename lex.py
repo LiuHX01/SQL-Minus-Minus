@@ -29,7 +29,8 @@ keywords = {'SELECT': 1,
             'IS': 25,
             'NOT': 26,
             'NULL': 27,
-            'ON': 28
+            'ON': 28,
+            '*': 29
             }
 
 ops = {'=': 1,
