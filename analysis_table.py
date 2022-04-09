@@ -5,6 +5,7 @@ from first_follow import get_str_first
 # Grammar_v2 = {}
 # M = {}
 
+
 '''
 构造预测分析表
 1.从原Grammar中重新提取 {(左端, 序号): ['右端串(右端1 右端2 右端3)']
@@ -14,6 +15,9 @@ from first_follow import get_str_first
 5.遍历Follow集，遇到终结符，{(左端，终结符): [左端，右端串，序号]}
 '''
 
+
+# 为什么要再提取一次呢？之前的提取没有编号，而且将左端相同的多条规则合并，这里不适用
+# 如果有时间会考虑修改，只提取一次
 def get_grammar_v2():
     with open('data/grammar.txt', 'r', encoding='utf-8') as f:
         for g in f.readlines():
@@ -56,10 +60,8 @@ def get_M():
                         # ε同时在follow和first中
                         if each2 == '$':
                             M[(k[0], '$')] = [k[0], v, k[1]]
-    pass
 
 
 def main():
     get_grammar_v2()
     get_M()
-    # return Grammar_v2, M

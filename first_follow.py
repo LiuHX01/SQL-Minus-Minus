@@ -1,49 +1,14 @@
 from common import *
-# 字典格式形如 {'functionCall'=['AVG', 'MAX']}
-# Grammar = {}
-# First = {}
-# First_str = {}
-# Follow = {}
-# Vn = []
-# Start_flag = 'root'
-
-
-# 两个测试用例 结果都对 怀疑指导书上例子错了
-# Grammar = {'A':['B C c','g D B'],
-#            'B':['b C D E', '$'],
-#            'C':['D a B','c a'],
-#            'D':['d D', '$'],
-#            'E':['g A f','c']} # {'root': ['dmlStatement']}
-# Grammar = {
-#     'E':['T EE'],
-#     'EE':['+ T EE', '$'],
-#     'T':['F TT'],
-#     'TT':['* F TT', '$'],
-#     'F':['( E )','i']
-# }
-# Grammar = {
-#     'S': ['a A B b c d', '$'],
-#     'A': ['A S d', '$'],
-#     'B': ['e C', 'S A h', '$'],
-#     'C': ['S f', 'C g', '$']
-# }
-# Vn = ['A','B','C', 'D', 'E']
-
-
-def pre_proc2(in_str):
-    in_str = in_str.partition('.')[2].strip()
-    in_str = in_str.partition(' -> ')
-    return in_str[0], in_str[2]
 
 
 def get_grammar():
     with open('./data/grammar.txt', 'r', encoding='utf-8') as f:
         it = f.readlines()
-        # print(type(it))
         for i, g in enumerate(it):
             if g[0] == '/':
                 continue
-            l, r = pre_proc2(g)
+            g = g.partition('.')[2].strip().partition(' -> ')
+            l, r = g[0], g[2]
             if 'GROUP BY' in r:
                 r = r.replace('GROUP BY', 'GROUPBY')
             if 'ORDER BY' in r:
@@ -89,11 +54,10 @@ def get_first():
                                 tmp2.remove('$')
                         tmp = tmp1 + tmp2
 
-                        if len(tmp) > 1:
-                            tmp = list(set(tmp))
+                        tmp = list(set(tmp))
 
                         First[left] = tmp
-                        if '$' not in First[g]:
+                        if '$' not in First.get(g):
                             break
                     # 终结符或$ 直接加入并结束
                     else:
@@ -101,15 +65,14 @@ def get_first():
                         tmp2 = [g]
                         tmp = tmp1 + tmp2
 
-                        if len(tmp) > 1:
-                            tmp = list(set(tmp))
+                        tmp = list(set(tmp))
 
                         First[left] = tmp
                         break
 
             # 操作前后长度对比，因为只可能往里加
             len2 = len(First.get(left))
-            if len1 != len2:
+            if len1 < len2:
                 f = 1
 
 
@@ -123,7 +86,7 @@ def get_str_first(in_str):
         if each not in Vn:
             First[each] = [each]
         tmp1 = First_str.get(in_str).copy() if First_str.get(in_str) is not None else []
-        tmp2 = First[each].copy()
+        tmp2 = First.get(each).copy()
         if '$' in tmp2:
             if i != len(l_str) - 1:
                 tmp2.remove('$')
@@ -131,11 +94,12 @@ def get_str_first(in_str):
         if len(tmp) > 1:
             tmp = list(set(tmp))
         First_str[in_str] = tmp
-        if '$' not in First[each]:
+        if '$' not in First.get(each):
             break
-    return First_str[in_str]
+    return First_str.get(in_str)
 
 
+# 这里不区分ε和#了，统一用$代替，暂时没什么问题
 def get_follow():
     for vn in Vn:
         Follow[vn] = []
@@ -146,7 +110,7 @@ def get_follow():
         f = 0
         # 对于每个终结符vn 比如要找G的
         for vn in Vn:
-            len1 = len(Follow[vn])
+            len1 = len(Follow.get(vn))
             # 在每个Grammar里找 形如 {'functionCall'=['AVG G', 'MAX']}
             for k, v in Grammar.items():
                 # 对functionCall -> 'AVG G'
@@ -193,8 +157,8 @@ def get_follow():
                             # 不是最后一个 要处理下一个
                             else:
                                 ff = 1
-            len2 = len(Follow[vn])
-            if len1 != len2:
+            len2 = len(Follow.get(vn))
+            if len1 < len2:
                 f = 1
         # print(Follow)
 

@@ -4,9 +4,9 @@ import first_follow
 import analysis_table
 import final
 
-'''
 
-'''
+
+
 
 if __name__ == '__main__':
     with open('./data/input.txt', 'r', encoding='utf-8') as f:

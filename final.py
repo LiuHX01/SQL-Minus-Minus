@@ -8,9 +8,9 @@ stack = ['root']
 def reduce(Token):
     cnt = 1
     # 对于Token中每个
-    print(Token)
+    # print(Token)
     for i, [in_str, in_type] in enumerate(Token):
-        print(in_str, in_type)
+        # print(in_str, in_type)
         # 是关键字、运算符、界符，输入符号是本身
         todeal = ''
         if in_type == 'KW' or in_type == 'OP' or in_type == 'SE':
@@ -24,7 +24,7 @@ def reduce(Token):
 
         state = ''
         while state != 'move':
-            print(stack)
+            # print(stack)
             stack_top = stack.pop()
             # 不相等 说明还得规约
             if stack_top != todeal:
