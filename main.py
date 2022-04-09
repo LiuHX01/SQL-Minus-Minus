@@ -4,11 +4,19 @@ import first_follow
 import analysis_table
 import final
 
-
-
-
-
 if __name__ == '__main__':
+    # 得到文法
+    get_grammar()
+
+    # 新结构的文法
+    get_grammar_v2()
+
+    # 得到该文法的FIRST FOLLOW集
+    first_follow.main()
+
+    # 构造预测分析表
+    analysis_table.main()
+
     with open('./data/input.txt', 'r', encoding='utf-8') as f:
         sql = f.readline()
     sql = formatting(sql)
@@ -23,13 +31,7 @@ if __name__ == '__main__':
         if 'ORDER BY' in i[0]:
             i[0] = i[0].replace('ORDER BY', 'ORDERBY')
 
-    # 得到该文法的FIRST FOLLOW集
-    first_follow.main()
-
-    # 构造预测分析表
-    analysis_table.main()
-
     # 进行最终规约
-    final.reduce(Token)
+    final.main(Token)
 
-    print('Done!')
+    print('---------------------------------------------------')

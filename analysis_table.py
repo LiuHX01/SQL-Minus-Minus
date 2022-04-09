@@ -1,5 +1,6 @@
 from common import *
 from first_follow import get_str_first
+
 # 预测分析表 {[A,a]:[A,α]}
 #         a非终结符 α产生式右端
 # Grammar_v2 = {}
@@ -14,30 +15,6 @@ from first_follow import get_str_first
 4.若First集中有ε，求左端Follow集
 5.遍历Follow集，遇到终结符，{(左端，终结符): [左端，右端串，序号]}
 '''
-
-
-# 为什么要再提取一次呢？之前的提取没有编号，而且将左端相同的多条规则合并，这里不适用
-# 如果有时间会考虑修改，只提取一次
-def get_grammar_v2():
-    with open('data/grammar.txt', 'r', encoding='utf-8') as f:
-        for g in f.readlines():
-            # 跳过注释
-            if g[0] == '/':
-                continue
-            tmp1 = g.partition('.')
-            # 获得序号
-            seqnum = tmp1[0]
-            tmp2 = tmp1[2].strip().partition(' -> ')
-            left = tmp2[0]
-            right = tmp2[2]
-            # 我真服了 这个GROUP BY和ORDER BY
-            if 'GROUP BY' in right:
-                right = right.replace('GROUP BY', 'GROUPBY')
-            if 'ORDER BY' in right:
-                right = right.replace('ORDER BY', 'ORDERBY')
-            Grammar_v2[(left, seqnum)] = right
-    # for each in Grammar_v2.items():
-    #     print(each)
 
 
 # Grammar形如 'dottedId': ['. uid', '$']
@@ -63,5 +40,4 @@ def get_M():
 
 
 def main():
-    get_grammar_v2()
     get_M()

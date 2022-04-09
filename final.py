@@ -1,18 +1,17 @@
 import sys
 from common import *
-# list 模拟栈
-stack = ['root']
+
 
 # M形如
 # ('selectStatement', 'SELECT'): ['selectStatement', 'querySpecification unionStatements', '6']
-def reduce(Token):
+def reduce(Token, stack):
     cnt = 1
     # 对于Token中每个
-    # print(Token)
+    # print(stack)
     for i, [in_str, in_type] in enumerate(Token):
         # print(in_str, in_type)
-        # 是关键字、运算符、界符，输入符号是本身
-        todeal = ''
+        # 关键字、运算符、界符，输入符号是本身
+        # todeal = ''
         if in_type == 'KW' or in_type == 'OP' or in_type == 'SE':
             todeal = in_str
         # 否则以类型代替
@@ -62,6 +61,6 @@ def reduce(Token):
                 cnt += 1
 
 
-
 def main(Token):
-    reduce(Token)
+    stack = [Start_flag]
+    reduce(Token, stack)

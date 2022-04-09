@@ -1,30 +1,6 @@
 from common import *
 
 
-def get_grammar():
-    with open('./data/grammar.txt', 'r', encoding='utf-8') as f:
-        it = f.readlines()
-        for i, g in enumerate(it):
-            if g[0] == '/':
-                continue
-            g = g.partition('.')[2].strip().partition(' -> ')
-            l, r = g[0], g[2]
-            if 'GROUP BY' in r:
-                r = r.replace('GROUP BY', 'GROUPBY')
-            if 'ORDER BY' in r:
-                r = r.replace('ORDER BY', 'ORDERBY')
-            # 认为所有在左侧的都是非终结符 其他都是终结符
-            if l not in Vn:
-                Vn.append(l)
-            if Grammar.get(l) is not None:
-                Grammar[l].append(r)
-            else:
-                Grammar[l] = [r]
-    # print(Grammar)
-    # with open('./data/new_grammar.txt', 'w', encoding='utf-8') as f:
-    #     f.write(str(Grammar))
-
-
 def get_first():
     for vn in Vn:
         First[vn] = []
@@ -80,7 +56,7 @@ def get_first():
 # input:形如'AA BB CC'
 # return ['a','$']
 def get_str_first(in_str):
-    l_str = in_str.split(' ') # ['Cc']
+    l_str = in_str.split(' ')  # ['Cc']
     for i, each in enumerate(l_str):
         # 在这里处理一下终结符的First集
         if each not in Vn:
@@ -117,7 +93,7 @@ def get_follow():
                 for each in v:
                     # functionCall -> ['AVG','G']
                     each = each.split(' ')
-                    ff = 0 # 假设 k -> G a A... 求 vn
+                    ff = 0  # 假设 k -> G a A... 求 vn
                     for i, s in enumerate(each):
                         # AVG不是该vn
                         if s != vn:
@@ -133,7 +109,7 @@ def get_follow():
                                     if j != len(each) - 1:
                                         long_s += ' '
                                 get_str_first(long_s)
-                                tmp1 = First_str.get(long_s).copy()# if First_str.get(long_s) is not None else []
+                                tmp1 = First_str.get(long_s).copy()  # if First_str.get(long_s) is not None else []
                                 # 不是None 最多是[]
                                 tmp2 = Follow.get(vn)
                                 if '$' in tmp1:
@@ -153,27 +129,14 @@ def get_follow():
                                 tmp2 = Follow.get(vn).copy() if Follow.get(vn) is not None else []
                                 tmp = list(set(tmp1 + tmp2))
                                 Follow[vn] = tmp
-                                pass
                             # 不是最后一个 要处理下一个
                             else:
                                 ff = 1
             len2 = len(Follow.get(vn))
             if len1 < len2:
                 f = 1
-        # print(Follow)
-
-    pass
 
 
 def main():
-    get_grammar()
     get_first()
-    # print('【【【first】】】')
-    # print(First)
     get_follow()
-    # print('【【【follow】】】')
-    # print(Follow)
-    # with open('./data/first.txt', 'w', encoding='utf-8') as f:
-    #     f.write(str(First))
-
-    return Vn, Grammar, First, Follow
