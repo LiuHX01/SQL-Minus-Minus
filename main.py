@@ -18,20 +18,22 @@ if __name__ == '__main__':
     analysis_table.main()
 
     with open('./data/input.txt', 'r', encoding='utf-8') as f:
-        sql = f.readline()
-    sql = formatting(sql)
+        sqls = f.read().splitlines()
 
-    # 等待一个新的Lexical analyzer
-    Token = lex.main(sql)
+    for sql in sqls:
+        sql = formatting(sql)
 
-    # 原因用空格连接两个符号
-    for i in Token:
-        if 'GROUP BY' in i[0]:
-            i[0] = i[0].replace('GROUP BY', 'GROUPBY')
-        if 'ORDER BY' in i[0]:
-            i[0] = i[0].replace('ORDER BY', 'ORDERBY')
+        # 等待一个新的Lexical analyzer
+        Token = lex.main(sql)
 
-    # 进行最终规约
-    final.main(Token)
+        # 原因用空格连接两个符号
+        for i in Token:
+            if 'GROUP BY' in i[0]:
+                i[0] = i[0].replace('GROUP BY', 'GROUPBY')
+            if 'ORDER BY' in i[0]:
+                i[0] = i[0].replace('ORDER BY', 'ORDERBY')
 
-    print('---------------------------------------------------')
+        # 进行最终规约
+        final.main(Token)
+
+        print('---------------------------------------------------')

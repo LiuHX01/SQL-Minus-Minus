@@ -1,6 +1,6 @@
 import sys
 
-Token = []
+# Token = []
 
 keywords = {'SELECT': 1,
             'FROM': 2,
@@ -30,7 +30,9 @@ keywords = {'SELECT': 1,
             'NOT': 26,
             'NULL': 27,
             'ON': 28,
-            '*': 29
+            '*': 29,
+            'SET': 30,
+            'COUNT': 31
             }
 
 ops = {'=': 1,
@@ -56,7 +58,7 @@ ses = {'(': 1,
 
 
 # -------------------------------------------------------------------------------
-def deal(in_str):
+def deal(in_str, Token):
     # a	<IDN,a>
     tk = in_str.partition('\t')
     Token.append([tk[0], tk[2].rpartition(',')[0][1:]])
@@ -92,29 +94,29 @@ def checkHEX(str):
     return True
 
 
-def Print(tmp, isStr=False):
+def Print(tmp, Token, isStr=False):
     if tmp != '':
         if isStr:
             print(f'{tmp}\t<STR,{tmp}>')
-            deal(f'{tmp}\t<STR,{tmp}>')
+            deal(f'{tmp}\t<STR,{tmp}>', Token)
         elif keywords.get(tmp) is not None:
             print(f'{tmp}\t<KW,{keywords.get(tmp)}>')
-            deal(f'{tmp}\t<KW,{keywords.get(tmp)}>')
+            deal(f'{tmp}\t<KW,{keywords.get(tmp)}>', Token)
         elif ops.get(tmp) is not None:
             print(f'{tmp}\t<OP,{ops.get(tmp)}>')
-            deal(f'{tmp}\t<OP,{ops.get(tmp)}>')
+            deal(f'{tmp}\t<OP,{ops.get(tmp)}>', Token)
         elif tmp.isdigit():
             print(f'{tmp}\t<INT,{tmp}>')
-            deal(f'{tmp}\t<INT,{tmp}>')
+            deal(f'{tmp}\t<INT,{tmp}>', Token)
         elif tmp.replace('.', '').isdigit():
             print(f'{tmp}\t<FLOAT,{tmp}>')
-            deal(f'{tmp}\t<FLOAT,{tmp}>')
+            deal(f'{tmp}\t<FLOAT,{tmp}>', Token)
         elif checkHEX(tmp):
             print(f'{tmp}\t<INT,{tmp}>')
-            deal(f'{tmp}\t<INT,{tmp}>')
+            deal(f'{tmp}\t<INT,{tmp}>', Token)
         elif checkIDN(tmp):
             print(f'{tmp}\t<IDN,{tmp}>')
-            deal(f'{tmp}\t<IDN,{tmp}>')
+            deal(f'{tmp}\t<IDN,{tmp}>', Token)
         else:
             print('不可能到这的')
             sys.exit()
@@ -122,6 +124,8 @@ def Print(tmp, isStr=False):
 
 # -------------------------------------------------------------------------------
 def main(str):
+    # print(str)
+    Token = []
     tmp = ''
     isStr = False
     lPair = 0
@@ -130,7 +134,7 @@ def main(str):
             if tmp == 'GROUP' or tmp == 'ORDER':
                 tmp += c
             else:
-                Print(tmp)
+                Print(tmp, Token)
                 tmp = ''
 
         # 小数点还是属性符
@@ -139,23 +143,23 @@ def main(str):
                 tmp += c
             else:
                 print(f'{tmp}\t<IDN,{tmp}>')
-                deal(f'{tmp}\t<IDN,{tmp}>')
+                deal(f'{tmp}\t<IDN,{tmp}>', Token)
                 print(f'.\t<OP,13>')
-                deal(f'.\t<OP,13>')
+                deal(f'.\t<OP,13>', Token)
                 tmp = ''
 
         # 部分连在一起的运算符 除了点
         elif c in op_sig and isStr == False:
-            Print(tmp)
+            Print(tmp, Token)
             # <=> 在 <
             if str[i - 1] not in op_sig and str[i + 1] in op_sig and str[i + 2] in op_sig:
                 tmp = c + str[i + 1] + str[i + 2]
-                Print(tmp)
+                Print(tmp, Token)
                 # print(f'{c + str[i + 1] + str[i + 2]}\t<OP,{ops.get(c + str[i + 1] + str[i + 2])}>')
             # <= 在 <
             elif str[i - 1] not in op_sig and str[i + 1] in op_sig and str[i + 2] not in op_sig:
                 tmp = c + str[i + 1]
-                Print(tmp)
+                Print(tmp, Token)
                 # print(f'{c+str[i+1]}\t<OP,{ops.get(c+str[i+1])}>')
             # <=> 在 = 或 >
             elif (str[i - 1] in op_sig and str[i + 1] in op_sig) or (str[i - 1] in op_sig and str[i - 2] in op_sig):
@@ -166,7 +170,7 @@ def main(str):
             # < 在 <
             elif str[i - 1] not in op_sig and str[i + 1] not in op_sig:
                 tmp = c
-                Print(tmp)
+                Print(tmp, Token)
                 # print(f'{c}\t<OP,{ops.get(c)}>')
             else:
                 print('ERROR:没见过这样的运算符啊')
@@ -174,8 +178,8 @@ def main(str):
 
         # 左右括号 逗号
         elif (c == '(' or c == ')' or c == ',') and isStr == False:
-            Print(tmp)
-            deal(f'{c}\t<SE,{ses.get(c)}>')
+            Print(tmp, Token)
+            deal(f'{c}\t<SE,{ses.get(c)}>', Token)
             if c == '(':
                 lPair += 1
                 if i == len(str) - 1 and lPair > 0:
@@ -196,11 +200,12 @@ def main(str):
                 isStr = True
             # 右引号
             else:
-                Print(tmp, isStr=isStr)
+                Print(tmp, Token, isStr=isStr)
                 isStr = False
                 tmp = ''
 
         else:
             tmp += c
 
+    # print(Token)
     return Token
