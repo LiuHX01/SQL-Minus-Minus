@@ -44,7 +44,7 @@ def reduce(Token, stack):
 
                 # 修改了实现和输出方式 其实一样
                 if tmp_list[1] == '$':
-                    print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal2}\tmove')
+                    print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal2}\treduction')
                     cnt += 1
                     continue
                 right_str_list = tmp_list[1].split(' ')
