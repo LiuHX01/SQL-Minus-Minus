@@ -114,7 +114,7 @@
 106.	insertStatement -> insertKeyword tableName insertStatementRight
 107.	insertStatementRight -> insertStatementValue
 108.	insertStatementRight -> ( uidList ) insertStatementValue
-108.	insertKeyword -> INSERT into
+109.	insertKeyword -> INSERT into
 110.	into -> INTO
 111.	into -> $
 112.	insertStatementValue -> insertFormat ( expressionsWithDefaults ) expressionsWithDefaultsListRec

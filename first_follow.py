@@ -55,7 +55,8 @@ def get_first():
 # 求一个串的first
 # input:形如'AA BB CC'
 # return ['a','$']
-def get_str_first(in_str):
+# 作为一个常用函数，尽量让其只依赖输入参数，便于测试
+def get_str_first(in_str, First, Vn):
     l_str = in_str.split(' ')  # ['Cc']
     for i, each in enumerate(l_str):
         # 在这里处理一下终结符的First集
@@ -76,11 +77,12 @@ def get_str_first(in_str):
 
 
 # 这里不区分ε和#了，统一用$代替，暂时没什么问题
+# 4.11 区分# 更贴合书上 但是没区别
 def get_follow():
     for vn in Vn:
         Follow[vn] = []
 
-    Follow[Start_flag] = ['$']
+    Follow[Start_flag] = ['#']
     f = 1
     while f:
         f = 0
@@ -108,7 +110,7 @@ def get_follow():
                                     long_s += each[j]
                                     if j != len(each) - 1:
                                         long_s += ' '
-                                get_str_first(long_s)
+                                get_str_first(long_s, First, Vn)
                                 tmp1 = First_str.get(long_s).copy()  # if First_str.get(long_s) is not None else []
                                 # 不是None 最多是[]
                                 tmp2 = Follow.get(vn)

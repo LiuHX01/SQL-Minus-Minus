@@ -22,7 +22,7 @@ from first_follow import get_str_first
 def get_M():
     # 对文法G的每个产生式A->α k:(左端，序号) v:右端串
     for k, v in Grammar_v2.items():
-        first_right = get_str_first(v)
+        first_right = get_str_first(v, First, Vn)
         for each in first_right:
             # 遇到终结符
             if each not in Vn and each != '$':
@@ -35,8 +35,8 @@ def get_M():
                     if each2 not in Vn and each2 != '$':
                         M[(k[0], each2)] = [k[0], v, k[1]]
                         # ε同时在follow和first中
-                        if each2 == '$':
-                            M[(k[0], '$')] = [k[0], v, k[1]]
+                        if each2 == '#':
+                            M[(k[0], '#')] = [k[0], v, k[1]]
 
 
 def main():

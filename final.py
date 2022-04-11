@@ -31,26 +31,35 @@ def reduce(Token, stack):
                 # 得到['selectStatement', 'querySpecification unionStatements', '6']
                 try:
                     tmp_list = M[(stack_top, todeal)]
+                    rule_num = tmp_list[2]
+                    todeal2 = todeal
+                    if todeal == 'GROUPBY':
+                        todeal2 = 'GROUP BY'
+                    if todeal == 'ORDERBY':
+                        todeal2 = 'ORDER BY'
                 except:
                     print(f'ERROR:不匹配，栈顶:{stack_top}   终结符:{todeal}')
                     print(f'栈:{stack}')
                     sys.exit()
-                # 先入栈
-                right_str_list = tmp_list[1].split(' ')
-                for each in reversed(right_str_list):
-                    if each != '$':
-                        stack.append(each)
 
-                rule_num = tmp_list[2]
-                todeal2 = todeal
-                if todeal == 'GROUPBY':
-                    todeal2 = 'GROUP BY'
-                if todeal == 'ORDERBY':
-                    todeal2 = 'ORDER BY'
+                # 修改了实现和输出方式 其实一样
+                if tmp_list[1] == '$':
+                    print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal2}\tmove')
+                    cnt += 1
+                    continue
+                right_str_list = tmp_list[1].split(' ')
+                # 先入栈
+                for each in reversed(right_str_list):
+                    # if each != '$':
+                    stack.append(each)
+
                 print(f'{cnt}\t{rule_num}\t{stack_top}#{todeal2}\t{state}')
                 cnt += 1
             # 相等了 可以规约了
             else:
+                if stack_top == todeal == '#':
+                    print(f'{cnt}\t/\t{stack_top}#{todeal}\taccept')
+                    break
                 state = 'move'
                 todeal2 = todeal
                 if todeal == 'GROUPBY':
@@ -62,5 +71,6 @@ def reduce(Token, stack):
 
 
 def main(Token):
-    stack = [Start_flag]
+    Token.append(['#', '#'])
+    stack = ['#', Start_flag]
     reduce(Token, stack)
