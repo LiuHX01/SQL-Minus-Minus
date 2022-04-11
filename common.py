@@ -39,6 +39,7 @@ def get_grammar():
                 Grammar[l].append(r)
             else:
                 Grammar[l] = [r]
+    return Grammar
 
 
 # 为什么要再提取一次呢？之前的提取没有编号，而且将左端相同的多条规则合并，这里不适用
@@ -51,7 +52,7 @@ def get_grammar_v2():
                 continue
             tmp1 = g.partition('.')
             # 获得序号
-            seqnum = tmp1[0]
+            seqnum = int(tmp1[0])
             tmp2 = tmp1[2].strip().partition(' -> ')
             left = tmp2[0]
             right = tmp2[2]
@@ -61,3 +62,5 @@ def get_grammar_v2():
             if 'ORDER BY' in right:
                 right = right.replace('ORDER BY', 'ORDERBY')
             Grammar_v2[(left, seqnum)] = right
+
+    return Grammar_v2
