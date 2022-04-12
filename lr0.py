@@ -1,3 +1,11 @@
+'''
+CLOSURE(I):
+    1.本身在其中
+    2.若A->α·Bβ属于CLOSURE(I)，那么对于任何B->γ，项目B->·γ也属于其中
+    3.反复迭代直到不再增多
+'''
+start_f = 'S~'
+
 # Grammar = {(0, 'root~'): [['root'], [0, 1]]}
 Grammar = {
     (0, 'S~'): [['E'], [0, 1]],
@@ -13,7 +21,7 @@ Grammar = {
 Closure = {
     0: [['S~', ['E'], 0]]
 }
-GO = {}
+Go = {}
 
 # Grammar = {(序号, 左端): [['右端1', '右端2', '右端3'], [0, 1, 2, 3]]}
 def get_grammar():
@@ -42,8 +50,8 @@ def get_grammar():
 
 
 # CLOSURE: {序号: [[左1, [右1], 点位置1], [左2, [右2], 点位置2]]}
-# Item
-def get_CLOSURE():
+# 作为框里的项
+def get_CLOSURE(cnt):
     # 每次迭代都调用，直到不再增大
     # input: 当前迭代的CLOSURE [[左1, [右1], 点位置1], [左2, [右2], 点位置2]]
     def get_CLOSURE_I(Item):
@@ -51,7 +59,8 @@ def get_CLOSURE():
         # [左, 右, 点位置]
         for it in Item:
             left, rights, point = it[0], it[1], it[2]
-            if point == len(rights) + 1:
+            # 防止越界
+            if point == len(rights):
                 continue
             # 点的后一个符号
             to_find = rights[point]
@@ -64,22 +73,61 @@ def get_CLOSURE():
                         ret.append([to_find, gv[0], 0])
         return ret
 
-    # TODO:对于每个项集
     f = 1
     while f:
         f = 0
-        len1 = len(Closure[0])
-        Closure[0] = get_CLOSURE_I(Closure[0])
-        len2 = len(Closure[0])
+        len1 = len(Closure[cnt])
+        Closure[0] = get_CLOSURE_I(Closure[cnt])
+        len2 = len(Closure[cnt])
 
         if len2 > len1:
             f = 1
-    print(Closure[0])
-    pass
+    print(Closure[cnt])
 
 
+# 什么结构好呢- -
+# GO = {(转移前序号, 转移符号): 转移后序号}
+# 作为项集之间的连线
 def get_GOTO():
     pass
+
+
+# 构造文法的LR(0)自动机
+def get_FA():
+    # 项集总数，作为新项集的编号
+    count = 1
+    # 当前处理的项集编号
+    curr = 0
+    # 每一轮处理一个项集，当没有新增项集时自动机构造完成
+    while curr < count:
+        # 用该项集的初始内容构造项集
+        get_CLOSURE(curr)
+        # 现在编号为curr的项集完整了
+        # 接下来对于点右边每个符号进行GO
+        # 不同符号分组 {'E': [[左, [右], 位置], [左, [右], 位置]]}
+        to_deal = {}
+        for each in Closure[curr]:
+            left, rights, point = each[0], each[1], each[2]
+            # 点右边没符号了
+            if point == len(rights):
+                # TODO:这里处理方式还没想好
+                if left == start_f:
+                    Go[(curr, '$')] = -1
+            else:
+                # 点右边的符号
+                to_move = rights[point]
+                # 传统艺能，蠢写法
+                tmp = to_deal.get(to_move).copy() if to_deal.get(to_move) is not None else []
+                tmp.append([left, rights, point + 1])
+                to_deal[to_move] = tmp
+
+        # todeal 满了 可以分批送去当作初始项集
+        for k, v in to_deal.items():
+            Go[(curr, count)]
+            pass
+
+        curr += 1
+        pass
 
 
 def get_ACTION():
@@ -88,4 +136,4 @@ def get_ACTION():
 
 if __name__ == '__main__':
     # get_grammar()
-    get_CLOSURE()
+    get_CLOSURE(0)
