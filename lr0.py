@@ -77,29 +77,36 @@ def get_CLOSURE(cnt):
     while f:
         f = 0
         len1 = len(Closure[cnt])
-        Closure[0] = get_CLOSURE_I(Closure[cnt])
+        Closure[cnt] = get_CLOSURE_I(Closure[cnt])
         len2 = len(Closure[cnt])
 
         if len2 > len1:
             f = 1
-    print(Closure[cnt])
 
 
 # 什么结构好呢- -
 # GO = {(转移前序号, 转移符号): 转移后序号}
 # 作为项集之间的连线
-def get_GOTO():
-    pass
 
 
 # 构造文法的LR(0)自动机
 def get_FA():
+    # 如果有一样的，那么自环，返回序号
+    def check(cur_count):
+        for k, v in Closure.items():
+            if k < cur_count:
+                if v == Closure[cur_count]:
+                    return k
+        return -1
+
+
     # 项集总数，作为新项集的编号
     count = 1
     # 当前处理的项集编号
     curr = 0
     # 每一轮处理一个项集，当没有新增项集时自动机构造完成
     while curr < count:
+        # print(curr, count)
         # 用该项集的初始内容构造项集
         get_CLOSURE(curr)
         # 现在编号为curr的项集完整了
@@ -123,11 +130,19 @@ def get_FA():
 
         # todeal 满了 可以分批送去当作初始项集
         for k, v in to_deal.items():
-            Go[(curr, count)]
-            pass
+            Closure[count] = v
+            get_CLOSURE(count)
+            self_f = check(count)
+
+            # 不是自环
+            if self_f == -1:
+                Go[(curr, k)] = count
+                count += 1
+            else:
+                Go[(curr, k)] = self_f
+                del Closure[count]
 
         curr += 1
-        pass
 
 
 def get_ACTION():
@@ -136,4 +151,9 @@ def get_ACTION():
 
 if __name__ == '__main__':
     # get_grammar()
-    get_CLOSURE(0)
+    get_FA()
+    for k, v in Closure.items():
+        print(k, v)
+    print('=======')
+    for k, v in Go.items():
+        print(k, v)
