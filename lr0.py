@@ -4,17 +4,28 @@ CLOSURE(I):
     2.若A->α·Bβ属于CLOSURE(I)，那么对于任何B->γ，项目B->·γ也属于其中
     3.反复迭代直到不再增多
 '''
+import sys
+
 start_f = 'S~'
 
-# Grammar = {(0, 'root~'): [['root'], [0, 1]]}
+Grammar = {(0, 'root~'): [['root'], [0, 1]]}
+# Grammar = {
+#     (0, 'S~'): [['E'], [0, 1]],
+#     (1, 'E'): [['a', 'A'], [0, 1, 2]],
+#     (2, 'E'): [['b', 'B'], [0, 1, 2]],
+#     (3, 'A'): [['c', 'A'], [0, 1, 2]],
+#     (4, 'A'): [['d'], [0, 1]],
+#     (5, 'B'): [['c', 'B'], [0, 1, 2]],
+#     (6, 'B'): [['d'], [0, 1]]
+# }
 Grammar = {
     (0, 'S~'): [['E'], [0, 1]],
-    (1, 'E'): [['a', 'A'], [0, 1, 2]],
-    (2, 'E'): [['b', 'B'], [0, 1, 2]],
-    (3, 'A'): [['c', 'A'], [0, 1, 2]],
-    (4, 'A'): [['d'], [0, 1]],
-    (5, 'B'): [['c', 'B'], [0, 1, 2]],
-    (6, 'B'): [['d'], [0, 1]]
+    (1, 'E'): [['E', '+', 'T'], [0, 1, 2, 3]],
+    (2, 'E'): [['T'], [0, 1]],
+    (3, 'T'): [['T', '*', 'F'], [0, 1, 2, 3]],
+    (4, 'T'): [['F'], [0, 1]],
+    (5, 'F'): [['(', 'E', ')'], [0, 1, 2, 3]],
+    (6, 'F'): [['id'], [0, 1]]
 }
 # Closure = {0: [['root~', ['root'], 0]]}
 # Closure = {1: [['root', ['dmlStatement'], 0]]}
@@ -22,8 +33,10 @@ Closure = {
     0: [['S~', ['E'], 0]]
 }
 Go = {}
-Vn = ['S~', 'E', 'A', 'B']
-Vt = ['a', 'b', 'c', 'd']
+Vn = ['S~', 'E', 'T', 'F']
+# Vn = []
+# Vt = []
+Vt = ['+', '*', '(', ')', 'id']
 
 ACTION = {}
 GOTO = {}
@@ -43,6 +56,9 @@ def get_grammar():
         rights = tmp[2]
         rightl = rights.split(' ')
 
+        # 得到非终结符
+        Vn.append(left)
+
         if rightl == ['$']:
             # 对于A->ε，只有A->·
             pos = [-1]
@@ -52,6 +68,12 @@ def get_grammar():
             pos = [x for x in range(len(rightl) + 1)]
 
         Grammar[(seqnum, left)] = [rightl, pos]
+
+    # 得到终结符
+    for k, v in Grammar.items():
+        for each in v[0]:
+            if each not in Vn:
+                Vt.append(each)
 
 
 # CLOSURE: {序号: [[左1, [右1], 点位置1], [左2, [右2], 点位置2]]}
@@ -187,17 +209,103 @@ def get_lr0_analysis_table():
     pass
 
 
+# 我们假设Token和LL1一样的格式
+def reduce(Token):
+    cnt = 1
+    state_stack = [0]
+    ch_stack = ['#']
+
+    for in_str, in_type in Token:
+        # 关键字、运算符、界符，输入符号是本身
+        if in_type == 'KW' or in_type == 'OP' or in_type == 'SE':
+            todeal = in_str
+        else:
+            todeal = in_type
+
+        f = 1
+        while f:
+            f = 0
+            state_stack_top = state_stack[-1]
+            ch_stack_top = ch_stack[-1]
+
+            # 先得到表内符号
+            try:
+                action = ACTION[(state_stack_top, todeal)]
+            except:
+                print(f'ERROR:{state_stack_top}, {todeal}')
+                print(state_stack, ch_stack)
+                sys.exit()
+            # print(f'ACT:{action}，面临输入：{todeal}')
+            # print(f'状态栈：{state_stack}')
+            # print(f'符号栈：{ch_stack}')
+            # 接受
+            if action == 'acc':
+                print(f'{cnt}\t/\t{ch_stack_top}#{todeal}\taccept')
+                break
+            # 移入
+            elif action[0] == 's':
+                print(f'{cnt}\t/\t{ch_stack_top}#{todeal}\tmove')
+                state_stack.append(int(action[1:]))
+                ch_stack.append(todeal)
+                cnt += 1
+                pass
+            # 规约需要：1.改变符号栈 2.弹出状态栈 3.根据新状态栈顶、新符号栈顶、GOTO确定入栈状态
+            elif action[0] == 'r':
+                rule_num = int(action[1:])
+                print(f'{cnt}\t{rule_num}\t{ch_stack_top}#{todeal}\treduction')
+                # 找到该规则对应右部 出现弊端
+                left, rights = '', []
+                for k, v in Grammar.items():
+                    if k[0] == rule_num:
+                        left, rights = k[1], v[0]
+                # 注意符号栈里的是规则右部，需要替换为左部，先弹出右部数量的符号
+                for i in range(len(rights)):
+                    ch_stack.pop()
+                ch_stack.append(left)
+
+                # state_stack.pop()
+                # new_state_stack_top = state_stack[-1]
+                # new_ch_stack_top = ch_stack[-1]
+
+
+                # 如果找不到，一直弹出？
+                ff = 1
+                while ff:
+                    new_state_stack_top = state_stack[-1]
+                    new_ch_stack_top = ch_stack[-1]
+                    if GOTO.get((new_state_stack_top, new_ch_stack_top)) is None:
+                        state_stack.pop()
+                        ff = 1
+                    else:
+                        state_stack.append(GOTO[(new_state_stack_top, new_ch_stack_top)])
+                        ff = 0
+
+                f = 1
+                cnt += 1
+                pass
+            else:
+                print(action)
+                sys.exit()
+
+        pass
+    pass
+
+
 if __name__ == '__main__':
     # get_grammar()
+    # print(Vt)
     get_FA()
     get_lr0_analysis_table()
-    for k, v in ACTION.items():
-        print(k, v)
-    print('=======')
-    for k, v in GOTO.items():
-        print(k, v)
+    # for k, v in ACTION.items():
+    #     print(k, v)
+    # print('=======')
+    # for k, v in GOTO.items():
+    #     print(k, v)
     # for k, v in Closure.items():
     #     print(k, v)
     # print('=======')
     # for k, v in Go.items():
-    #     print(k, v)
+    #     print
+    reduce([['id', 'id'], ['*', '*'], ['id', 'id'], ['+', '+'], ['id', 'id'], ['#', '#']])
+    # reduce([['SELECT', 'KW'], ['t', 'IDN'], ['.', 'OP'], ['c', 'IDN'], ['FROM', 'KW'], ['t', 'IDN'], ['WHERE', 'KW'], ['t', 'IDN'], ['.', 'OP'],
+    #         ['a', 'IDN'], ['>', 'OP'], ['0', 'INT'], ['#', '#']])
