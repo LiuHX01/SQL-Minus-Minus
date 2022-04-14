@@ -17,7 +17,7 @@ def formatting(in_str):
     out_str = ''
     for i in in_str:
         out_str = out_str + i + ' '
-    return out_str
+    return out_str[:-1]
 
 
 def get_grammar():

@@ -1,4 +1,4 @@
-import lex
+import lexer
 from common import *
 import first_follow
 import analysis_table
@@ -24,7 +24,7 @@ if __name__ == '__main__':
         sql = formatting(sql)
 
         # 等待一个新的Lexical analyzer
-        Token = lex.main(sql)
+        Token = lexer.main(sql)
 
         # 原因用空格连接两个符号
         for i in Token:

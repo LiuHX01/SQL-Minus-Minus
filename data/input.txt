@@ -1,5 +1,5 @@
 SELECT t.a FROM t WHERE t > 2.2
-INSERT INTO Websites (name, url, alexa, country) VALUES ('百度','https://www.baidu.com/','4','CN');
+INSERT INTO Websites (name, url, alexa, country) VALUES ("百度","https://www.baidu.com/","4","CN");
 UPDATE Person SET FirstName = 'Fred' WHERE LastName = 'Wilson'
 DELETE FROM website WHERE id = 6;
 SELECT MAX(OrderPrice) AS LargestOrderPrice FROM Orders
