@@ -22,6 +22,11 @@ Closure = {
     0: [['S~', ['E'], 0]]
 }
 Go = {}
+Vn = ['S~', 'E', 'A', 'B']
+Vt = ['a', 'b', 'c', 'd']
+
+ACTION = {}
+GOTO = {}
 
 # Grammar = {(序号, 左端): [['右端1', '右端2', '右端3'], [0, 1, 2, 3]]}
 def get_grammar():
@@ -92,6 +97,7 @@ def get_CLOSURE(cnt):
 # 构造文法的LR(0)自动机
 def get_FA():
     # 如果有一样的，那么自环，返回序号
+    # 修改：是连接到已存在的项集
     def check(cur_count):
         for k, v in Closure.items():
             if k < cur_count:
@@ -108,7 +114,8 @@ def get_FA():
     while curr < count:
         # print(curr, count)
         # 用该项集的初始内容构造项集
-        get_CLOSURE(curr)
+        if curr == 0:
+            get_CLOSURE(curr)
         # 现在编号为curr的项集完整了
         # 接下来对于点右边每个符号进行GO
         # 不同符号分组 {'E': [[左, [右], 位置], [左, [右], 位置]]}
@@ -119,7 +126,9 @@ def get_FA():
             if point == len(rights):
                 # TODO:这里处理方式还没想好
                 if left == start_f:
-                    Go[(curr, '$')] = -1
+                    Go[(curr, '#')] = -2
+                else:
+                    Go[(curr, '#')] = -1
             else:
                 # 点右边的符号
                 to_move = rights[point]
@@ -134,7 +143,7 @@ def get_FA():
             get_CLOSURE(count)
             self_f = check(count)
 
-            # 不是自环
+            # 是一个新的
             if self_f == -1:
                 Go[(curr, k)] = count
                 count += 1
@@ -145,15 +154,50 @@ def get_FA():
         curr += 1
 
 
-def get_ACTION():
+# ACTION = {(状态, 符号): 动作}
+# 待定使用 GOTO = {(状态, 符号): 序号}
+def get_lr0_analysis_table():
+    for k, v in Closure.items():
+        for each in v:
+            left, rights, point = each[0], each[1], each[2]
+            # A->α·aβ属于Ik且Go(Ik, a)=Ij ACTION[k, a]=sj
+            if point < len(rights) and Go.get((k, rights[point])) is not None and rights[point] not in Vn:
+                ACTION[(k, rights[point])] = 's' + str(Go[(k, rights[point])])
+
+            # 项目A->α·属于Ik，对任何终结符和结束符a ACTION[k, a] == rj
+            if point == len(rights) and left != start_f:
+                # 寻找文法序号
+                num = -1
+                for gk, gv in Grammar.items():
+                    if gk[1] == left and gv[0] == rights:
+                        num = gk[0]
+                        break
+                for vt in Vt:
+                    ACTION[(k, vt)] = 'r' + str(num)
+                ACTION[(k, '#')] = 'r' + str(num)
+
+            # 接受
+            if left == start_f and point == 1:
+                ACTION[(k, '#')] = 'acc'
+
+            # Go(Ik, A)=Ij A为非终结符 GOTO[k, A]=j
+            if left in Vn and Go.get((k, left)) is not None:
+                GOTO[(k, left)] = Go[(k, left)]
+        pass
     pass
 
 
 if __name__ == '__main__':
     # get_grammar()
     get_FA()
-    for k, v in Closure.items():
+    get_lr0_analysis_table()
+    for k, v in ACTION.items():
         print(k, v)
     print('=======')
-    for k, v in Go.items():
+    for k, v in GOTO.items():
         print(k, v)
+    # for k, v in Closure.items():
+    #     print(k, v)
+    # print('=======')
+    # for k, v in Go.items():
+    #     print(k, v)
