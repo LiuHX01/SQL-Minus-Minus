@@ -18,25 +18,37 @@ Grammar = {(0, 'root~'): [['root'], [0, 1]]}
 #     (5, 'B'): [['c', 'B'], [0, 1, 2]],
 #     (6, 'B'): [['d'], [0, 1]]
 # }
-Grammar = {
-    (0, 'S~'): [['E'], [0, 1]],
-    (1, 'E'): [['E', '+', 'T'], [0, 1, 2, 3]],
-    (2, 'E'): [['T'], [0, 1]],
-    (3, 'T'): [['T', '*', 'F'], [0, 1, 2, 3]],
-    (4, 'T'): [['F'], [0, 1]],
-    (5, 'F'): [['(', 'E', ')'], [0, 1, 2, 3]],
-    (6, 'F'): [['id'], [0, 1]]
-}
-# Closure = {0: [['root~', ['root'], 0]]}
+# Grammar = {
+#     (0, 'S~'): [['E'], [0, 1]],
+#     (1, 'E'): [['E', '+', 'T'], [0, 1, 2, 3]],
+#     (2, 'E'): [['T'], [0, 1]],
+#     (3, 'T'): [['T', '*', 'F'], [0, 1, 2, 3]],
+#     (4, 'T'): [['F'], [0, 1]],
+#     (5, 'F'): [['(', 'E', ')'], [0, 1, 2, 3]],
+#     (6, 'F'): [['id'], [0, 1]]
+# }
+# Grammar = {
+#     (0, 'S~'): [['S'], [0, 1]],
+#     (1, 'S'): [['a', 'A', 'c', 'B', 'e'], [0, 1, 2, 3, 4, 5]],
+#     (2, 'A'): [['b'], [0, 1]],
+#     (3, 'A'): [['A', 'b'], [0, 1, 2]],
+#     (4, 'B'): [['d'], [0, 1]]
+# }
+Closure = {0: [['root~', ['root'], 0]]}
 # Closure = {1: [['root', ['dmlStatement'], 0]]}
-Closure = {
-    0: [['S~', ['E'], 0]]
-}
+# Closure = {
+#     0: [['S~', ['E'], 0]]
+# }
+# Closure = {
+#     0: [['S~', ['S'], 0]]
+# }
 Go = {}
-Vn = ['S~', 'E', 'T', 'F']
-# Vn = []
-# Vt = []
-Vt = ['+', '*', '(', ')', 'id']
+# Vn = ['S~', 'E', 'T', 'F']
+# Vn = ['S~', 'S', 'A', 'B']
+# Vt = ['a', 'b', 'c', 'd', 'e']
+Vn = []
+Vt = []
+# Vt = ['+', '*', '(', ')', 'id']
 
 ACTION = {}
 GOTO = {}
@@ -72,7 +84,7 @@ def get_grammar():
     # 得到终结符
     for k, v in Grammar.items():
         for each in v[0]:
-            if each not in Vn:
+            if each not in Vn and each != '$' and each not in Vt:
                 Vt.append(each)
 
 
@@ -259,26 +271,17 @@ def reduce(Token):
                     if k[0] == rule_num:
                         left, rights = k[1], v[0]
                 # 注意符号栈里的是规则右部，需要替换为左部，先弹出右部数量的符号
+                # 4.15修改：正确做法 先弹出r长度
                 for i in range(len(rights)):
                     ch_stack.pop()
+                    state_stack.pop()
                 ch_stack.append(left)
 
-                # state_stack.pop()
-                # new_state_stack_top = state_stack[-1]
-                # new_ch_stack_top = ch_stack[-1]
-
-
-                # 如果找不到，一直弹出？
-                ff = 1
-                while ff:
-                    new_state_stack_top = state_stack[-1]
-                    new_ch_stack_top = ch_stack[-1]
-                    if GOTO.get((new_state_stack_top, new_ch_stack_top)) is None:
-                        state_stack.pop()
-                        ff = 1
-                    else:
-                        state_stack.append(GOTO[(new_state_stack_top, new_ch_stack_top)])
-                        ff = 0
+                try:
+                    state_stack.append(GOTO.get((state_stack[-1], ch_stack[-1])))
+                except:
+                    print('ERROR:找不到GOTO项')
+                    sys.exit()
 
                 f = 1
                 cnt += 1
@@ -292,20 +295,23 @@ def reduce(Token):
 
 
 if __name__ == '__main__':
-    # get_grammar()
+    get_grammar()
     # print(Vt)
     get_FA()
     get_lr0_analysis_table()
-    # for k, v in ACTION.items():
-    #     print(k, v)
-    # print('=======')
-    # for k, v in GOTO.items():
-    #     print(k, v)
-    # for k, v in Closure.items():
-    #     print(k, v)
+    for k, v in ACTION.items():
+        print(k, v)
+    print('=======')
+    for k, v in Go.items():
+        print(k, v)
+    print('=======')
+    for k, v in Closure.items():
+        print(k, v)
+
     # print('=======')
     # for k, v in Go.items():
     #     print
-    reduce([['id', 'id'], ['*', '*'], ['id', 'id'], ['+', '+'], ['id', 'id'], ['#', '#']])
+    # reduce([['a', 'a'], ['b', 'b'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'], ['#', '#']])
+    # reduce([['id', 'id'], ['*', '*'], ['id', 'id'], ['+', '+'], ['id', 'id'], ['#', '#']])
     # reduce([['SELECT', 'KW'], ['t', 'IDN'], ['.', 'OP'], ['c', 'IDN'], ['FROM', 'KW'], ['t', 'IDN'], ['WHERE', 'KW'], ['t', 'IDN'], ['.', 'OP'],
     #         ['a', 'IDN'], ['>', 'OP'], ['0', 'INT'], ['#', '#']])
