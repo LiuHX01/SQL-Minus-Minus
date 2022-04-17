@@ -6,9 +6,10 @@ def get_grammar(path: str, syntax_type: int):
     :return: LL(1): grammar: {(seq_num, l): ['r1', 'r2', 'r3']}
              not LL(1): grammar: {(seq_num, l): [['r1', 'r2', 'r3'], [0, 1, 2, 3(点前符号数)]]},
              vn: ['vn1', 'vn2'],
-             vt: ['vt1', 'vt2']
+             vt: ['vt1', 'vt2'],
+             start: 'root~'
     """
-    vn, vt, grammar = [], [], {}
+    vn, vt, grammar, start = [], [], {}, ''
 
     with open(path, 'r', encoding='utf-8') as f:
         l_grammar = f.readlines()
@@ -34,11 +35,14 @@ def get_grammar(path: str, syntax_type: int):
         # LL(1)文法
         if syntax_type == 0:
             grammar[(seq_num, left)] = l_right
+            if seq_num == 1:
+                start = left
         # 非LL(1)文法
         else:
             if seq_num == 1:
                 grammar[(0, left + '~')] = [[left], [0, 1]]
                 vn.append(left + '~')
+                start = left + '~'
             point_pos = [x for x in range(len(l_right) + 1)] if l_right != ['$'] else [-1]
             grammar[(seq_num, left)] = [l_right, point_pos]
 
@@ -53,7 +57,7 @@ def get_grammar(path: str, syntax_type: int):
             if each not in vn and each not in vt and each != '$':
                 vt.append(each)
 
-    return grammar, vn, vt
+    return grammar, vn, vt, start
 
 
 def get_first(grammar: dict, vn: list, vt: list, syntax_type: int):
@@ -66,7 +70,7 @@ def get_first(grammar: dict, vn: list, vt: list, syntax_type: int):
     :param syntax_type: 使用文法种类 LL1:0, LR0:1, SRL:2, LR1:3
     :return: first: {l: ['r1', 'r2', 'r3', '$']}
     """
-    first = {}
+    first = {'$': '$'}
     for each in vn + vt:
         first[each] = [] if each in vn else [each]
 
@@ -145,7 +149,6 @@ def get_follow(grammar: dict, vn: list, first: dict, syntax_type: int):
     for each in vn:
         follow[each] = []
 
-    # 确定grammar第一个一定是root~/root才这能样写
     for k in grammar:
         if (k[0] == 0 and syntax_type != 0) or (k[0] == 1 and syntax_type == 0):
             follow[k[1]].append('#')
