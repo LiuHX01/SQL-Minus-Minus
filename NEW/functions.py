@@ -175,9 +175,9 @@ def get_follow(grammar: dict, vn: list, first: dict, syntax_type: int):
                                     if j != '$':
                                         follow[each].append(j)
                                     else:
-                                        for j in follow[gk[1]]:
-                                            if j not in follow[each]:
-                                                follow[each].append(j)
+                                        for k in follow[gk[1]]:
+                                            if k not in follow[each]:
+                                                follow[each].append(k)
                             proc_f = 0
                     # 遇到所求vn
                     else:
