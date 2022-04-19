@@ -145,16 +145,21 @@ def get_pred_anal_table(grammar: dict, follow: dict, closure: dict, go: dict, vn
                     if gk[1] == left and gv[0] == rights:
                         num = gk[0]
                         break
-                for t in vt:
-                    # slr
-                    if syntax_type == 2:
-                        if t in follow[left]:
-                            action[(k, t)] = 'r' + str(num)
-                            continue
-                        else:
-                            continue
-                    action[(k, t)] = 'r' + str(num)
-                action[(k, '#')] = 'r' + str(num)
+                if syntax_type == 1 or syntax_type == 2:
+                    for t in vt:
+                        # slr
+                        if syntax_type == 2:
+                            if t in follow[left]:
+                                action[(k, t)] = 'r' + str(num)
+                                continue
+                            else:
+                                continue
+                        action[(k, t)] = 'r' + str(num)
+                    action[(k, '#')] = 'r' + str(num)
+                elif syntax_type == 3:
+                    vts = each[3]
+                    for t in vts:
+                        action[(k, t)] = 'r' + str(num)
 
             # 接受
             if left == start and point == 1:

@@ -20,15 +20,15 @@ if __name__ == '__main__':
         ll1.reduce(token, pred, start)
     else:
         closure, go = lr.get_fa(grammar, first, syntax_type, start)
-        # action, goto = lr.get_pred_anal_table(grammar, follow, closure, go, vn, vt, start, syntax_type)
+        action, goto = lr.get_pred_anal_table(grammar, follow, closure, go, vn, vt, start, syntax_type)
         # for k, v in closure.items():
         #     print(k, v)
-        for k, v in go.items():
-            print(k, v)
+        # for k, v in go.items():
+        #     print(k, v)
         # for kk, vv in action.items():
         #     print(kk, vv)
-        # for kkk, vvv in goto.items():
-        #     print(kkk, vvv)
+        for kkk, vvv in goto.items():
+            print(kkk, vvv)
         # print(len(action))
         # lr.reduce(token, grammar, action, goto)
 
