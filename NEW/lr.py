@@ -1,5 +1,4 @@
 import sys
-
 import functions
 
 
@@ -125,9 +124,12 @@ def get_pred_anal_table(grammar: dict, follow: dict, closure: dict, go: dict, vn
                         break
                 for t in vt:
                     # slr
-                    if syntax_type == 2 and t in follow[left]:
-                        action[(k, t)] = 'r' + str(num)
-                        continue
+                    if syntax_type == 2:
+                        if t in follow[left]:
+                            action[(k, t)] = 'r' + str(num)
+                            continue
+                        else:
+                            continue
                     action[(k, t)] = 'r' + str(num)
                 action[(k, '#')] = 'r' + str(num)
 
