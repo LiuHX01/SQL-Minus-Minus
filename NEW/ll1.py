@@ -45,6 +45,11 @@ def reduce(token: list, pred_anal_table: dict, start: str):
     token.append(['#', '#'])
 
     for in_str, in_type in token:
+        if in_str == 'GROUP BY':
+            in_str = 'GROUPBY'
+        elif in_str == 'ORDER BY':
+            in_str = 'ORDERBY'
+
         if in_type == 'KW' or in_type == 'OP' or in_type == 'SE':
             todeal = in_str
         else:

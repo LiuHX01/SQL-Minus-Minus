@@ -70,7 +70,7 @@ def get_first(grammar: dict, vn: list, vt: list, syntax_type: int):
     :param syntax_type: 使用文法种类 LL1:0, LR0:1, SRL:2, LR1:3
     :return: first: {l: ['r1', 'r2', 'r3', '$']}
     """
-    first = {'$': '$'}
+    first = {'$': '$', '#': '#'}
     for each in vn + vt:
         first[each] = [] if each in vn else [each]
 

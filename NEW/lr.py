@@ -2,13 +2,15 @@ import sys
 import functions
 
 
-def get_fa(grammar: dict, syntax_type: int, start: str):
+def get_fa(grammar: dict, first: dict, syntax_type: int, start: str):
     """得到一个自动机
 
+    :param first:
     :param start:
     :param grammar:
     :param syntax_type:
     :return: closure: {序号: [[左端, [右端], 点位置], [左端, [右端], 点位置]]}
+             LR1: {序号: [[左端, [右端], 点位置, ['vt1', 'vt2']]]}
              go: {(转移前序号，转移符号): 转移后序号}
     """
     closure, go = {}, {}
@@ -16,6 +18,7 @@ def get_fa(grammar: dict, syntax_type: int, start: str):
     def get_closure(cnt):
         # 每次迭代都调用，直到不再增大
         # input: 当前迭代的CLOSURE [[左1, [右1], 点位置1], [左2, [右2], 点位置2]]
+        # 4.19更新：LR1：[[左1, [右1], 点位置1, [终结符1]], [左2, [右2], 点位置2, [终结符2]]]
         def get_CLOSURE_I(Item):
             ret = Item.copy()
             # [左, 右, 点位置]
@@ -26,13 +29,24 @@ def get_fa(grammar: dict, syntax_type: int, start: str):
                     continue
                 # 点的后一个符号
                 to_find = rights[point]
+
                 # 在规则中找
                 for gk, gv in grammar.items():
                     if gk[1] == to_find:
                         if gv[0] == ['$']:
                             continue
-                        if [to_find, gv[0], 0] not in ret:
+                        if (syntax_type == 1 or syntax_type == 2) and [to_find, gv[0], 0] not in ret:
                             ret.append([to_find, gv[0], 0])
+                        elif syntax_type == 3:
+                            alphas = it[3]
+                            beta = rights[point + 1: len(rights)]
+                            tmp_vt = []
+                            for alpha in alphas:
+                                first_ab = functions.get_str_first(beta + [alpha], first)
+                                tmp_vt += first_ab
+                                tmp_vt = list(set(tmp_vt))
+                            if [to_find, gv[0], 0, tmp_vt] not in ret:
+                                ret.append([to_find, gv[0], 0, tmp_vt])
             return ret
 
         f = 1
@@ -52,7 +66,11 @@ def get_fa(grammar: dict, syntax_type: int, start: str):
                     return ck
         return -1
 
-    closure[0] = [[start, grammar[(0, start)][0], 0]]
+    # 此处开始-----------------------------------------------------
+    if syntax_type == 1 or syntax_type == 2:
+        closure[0] = [[start, grammar[(0, start)][0], 0]]
+    elif syntax_type == 3:
+        closure[0] = [[start, grammar[(0, start)][0], 0, ['#']]]
     # 项集总数，作为新项集的编号
     count = 1
     # 当前处理的项集编号
@@ -69,6 +87,8 @@ def get_fa(grammar: dict, syntax_type: int, start: str):
         to_deal = {}
         for each in closure[curr]:
             left, rights, point = each[0], each[1], each[2]
+            if syntax_type == 3:
+                vts = each[3]
             # 点右边没符号了
             if point == len(rights):
                 # TODO:这里处理方式还没想好
@@ -81,7 +101,10 @@ def get_fa(grammar: dict, syntax_type: int, start: str):
                 to_move = rights[point]
                 # 传统艺能，蠢写法
                 tmp = to_deal.get(to_move).copy() if to_deal.get(to_move) is not None else []
-                tmp.append([left, rights, point + 1])
+                if syntax_type == 1 or syntax_type == 2:
+                    tmp.append([left, rights, point + 1])
+                elif syntax_type == 3:
+                    tmp.append([left, rights, point + 1, vts])
                 to_deal[to_move] = tmp
 
         # to deal 满了 可以分批送去当作初始项集
