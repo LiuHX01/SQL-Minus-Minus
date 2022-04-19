@@ -283,6 +283,7 @@ def deal(in_str):
 
 
 def main(sql):
+    Token.clear()
     nfa_states = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     symbols = []
     nfa_tran_state = []
@@ -409,5 +410,5 @@ def main(sql):
             else:
                 print('Wrong!')
 
-    # print(Token)
+    print(Token)
     return Token

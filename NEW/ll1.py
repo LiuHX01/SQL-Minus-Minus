@@ -49,6 +49,8 @@ def reduce(token: list, pred_anal_table: dict, start: str):
             in_str = 'GROUPBY'
         elif in_str == 'ORDER BY':
             in_str = 'ORDERBY'
+        if in_type == 'STR':
+            in_type = 'STRING'
 
         if in_type == 'KW' or in_type == 'OP' or in_type == 'SE':
             todeal = in_str
@@ -70,6 +72,7 @@ def reduce(token: list, pred_anal_table: dict, start: str):
                         o_vn = 'ORDER BY'
                 except KeyError:
                     print('ERROR: 栈顶不匹配')
+                    print(stack_top, todeal)
                     sys.exit()
 
                 l_right = pred_anal_table[(stack_top, todeal)][0]
@@ -87,6 +90,9 @@ def reduce(token: list, pred_anal_table: dict, start: str):
             else:
                 if stack_top == todeal == '#':
                     print(f'{step}\t/\t{stack_top}#{todeal}\taccept')
+                    stack = ['#', start]
+                    step = 1
+                    continue_f = 0
                     break
                 o_vn = todeal
                 if todeal == 'GROUPBY':

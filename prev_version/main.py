@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # 构造预测分析表
     analysis_table.main()
 
-    with open('./data/input.txt', 'r', encoding='utf-8') as f:
+    with open('../data/input.txt', 'r', encoding='utf-8') as f:
         sqls = f.read().splitlines()
 
     for sql in sqls:

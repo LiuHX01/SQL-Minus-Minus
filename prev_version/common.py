@@ -21,7 +21,7 @@ def formatting(in_str):
 
 
 def get_grammar():
-    with open('./data/grammar.txt', 'r', encoding='utf-8') as f:
+    with open('../data/grammar.txt', 'r', encoding='utf-8') as f:
         it = f.readlines()
         for i, g in enumerate(it):
             if g[0] == '/':
@@ -45,7 +45,7 @@ def get_grammar():
 # 为什么要再提取一次呢？之前的提取没有编号，而且将左端相同的多条规则合并，这里不适用
 # 如果有时间会考虑修改，只提取一次
 def get_grammar_v2():
-    with open('data/grammar.txt', 'r', encoding='utf-8') as f:
+    with open('../data/grammar.txt', 'r', encoding='utf-8') as f:
         for g in f.readlines():
             # 跳过注释
             if g[0] == '/':

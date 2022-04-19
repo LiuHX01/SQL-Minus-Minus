@@ -68,7 +68,7 @@ slr_flag = 1
 
 # Grammar = {(序号, 左端): [['右端1', '右端2', '右端3'], [0, 1, 2, 3]]}
 def get_grammar():
-    with open('data/grammar.txt', 'r', encoding='utf-8') as f:
+    with open('../data/grammar.txt', 'r', encoding='utf-8') as f:
         gs = f.readlines()
 
     for g in gs:

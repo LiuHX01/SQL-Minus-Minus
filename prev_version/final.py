@@ -37,6 +37,7 @@ def reduce(Token, stack):
                         todeal2 = 'GROUP BY'
                     if todeal == 'ORDERBY':
                         todeal2 = 'ORDER BY'
+                    print(stack_top, todeal)
                 except:
                     print(f'ERROR:不匹配，栈顶:{stack_top}   终结符:{todeal}')
                     print(f'栈:{stack}')
