@@ -9,6 +9,7 @@ if __name__ == '__main__':
 
     LL1, LR0, SLR, LR1 = 0, 1, 2, 3
     path = '../data/grammar.txt'
+    # path = '../data/test_grammar.txt'
 
     syntax_type = LL1
 
@@ -21,6 +22,7 @@ if __name__ == '__main__':
             continue
 
         token = lexer.main(sql)
+        # token = [['i', 'i'], ['*', '*'], ['i', 'i'], ['+', '+'], ['i', 'i']]
 
         if syntax_type == LL1:
             pred = ll1.get_pred_anal_table(grammar, first, follow, vt)
@@ -29,3 +31,4 @@ if __name__ == '__main__':
             closure, go = lr.get_fa(grammar, first, syntax_type, start)
             action, goto = lr.get_pred_anal_table(grammar, follow, closure, go, vn, vt, start, syntax_type)
             lr.reduce(token, grammar, action, goto)
+        # break
