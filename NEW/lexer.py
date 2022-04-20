@@ -410,5 +410,5 @@ def main(sql):
             else:
                 print('Wrong!')
 
-    print(Token)
+    # print(Token)
     return Token

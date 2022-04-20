@@ -8,8 +8,8 @@ if __name__ == '__main__':
         sqls = f.read().splitlines()
 
     LL1, LR0, SLR, LR1 = 0, 1, 2, 3
-
     path = '../data/grammar.txt'
+
     syntax_type = LL1
 
     grammar, vn, vt, start = functions.get_grammar(path, syntax_type)
@@ -17,6 +17,9 @@ if __name__ == '__main__':
     follow = functions.get_follow(grammar, vn, first, syntax_type)
 
     for sql in sqls:
+        if sql == '':
+            continue
+
         token = lexer.main(sql)
 
         if syntax_type == LL1:
@@ -26,4 +29,3 @@ if __name__ == '__main__':
             closure, go = lr.get_fa(grammar, first, syntax_type, start)
             action, goto = lr.get_pred_anal_table(grammar, follow, closure, go, vn, vt, start, syntax_type)
             lr.reduce(token, grammar, action, goto)
-
