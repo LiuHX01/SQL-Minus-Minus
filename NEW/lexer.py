@@ -51,8 +51,10 @@ ops = {'=': 1,
        '||': 10,
        'OR': 11,
        'XOR': 12,
-       '.': 13,
-       '!': 14
+       'NOT': 13,
+       '!': 14,
+       '-': 15,
+       '.': 16
        }
 
 # 界符字典
@@ -170,9 +172,9 @@ class DFA:
                 index0 = state_list[0]
                 for i, state in enumerate(state_list, 1):
                     index = state
-                    self.dfa_states[index] = []  # 由于用下标检索，需要保留空元素
                     if self.dfa_states[index] in self.dfa_final_states:
                         self.dfa_final_states.remove(self.dfa_states[index])
+                    self.dfa_states[index] = []  # 由于用下标检索，需要保留空元素
                     for f in self.dfa_tran_state:
                         if f[0] == index: f[0] = index0
                         if f[2] == index: f[2] = index0
@@ -192,9 +194,9 @@ class DFA:
         # print(states)
         for i, state in enumerate(self.dfa_states):
             if i not in states:
-                self.dfa_states[i] == []
                 if self.dfa_states[i] in self.dfa_final_states:
                     self.dfa_final_states.remove(self.dfa_states[i])
+                self.dfa_states[i] == []
                 for f in self.dfa_tran_state:
                     if f[0] == i or f[2] == i:
                         self.dfa_tran_state.remove(f)
@@ -290,7 +292,7 @@ def main(sql):
     nfa_start_state = [0]
     nfa_final_states = [1, 3, 4, 5, 8]
 
-    all_symbol = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_*=><!&|.(),\"'
+    all_symbol = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_*=><!&|.(),\"-'
     nodigit_symbol = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'
     normal_symbol = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
     digit_symbol = '0123456789'
@@ -345,9 +347,7 @@ def main(sql):
     # 处理界符
     sql = sql.replace('(', ' ( ').replace(')', ' ) ').replace(',', ' , ').replace('\"', ' \" ')
     # 处理运算符
-    sql = sql.replace('<', ' < ').replace('>', ' > ').replace('=', ' = ').replace('<  =', '<=').replace('>  =',
-                                                                                                        '>=').replace(
-        '<=  >', '<=>').replace('!', ' ! ').replace('!  =', '!=').replace('&&', ' && ').replace('||', ' || ')
+    sql = sql.replace('<', ' < ').replace('>', ' > ').replace('=',' = ').replace('<  =', '<=').replace('>  =', '>=').replace('<=  >', '<=>').replace('!', ' ! ').replace('!  =', '!=').replace('&&', ' && ').replace('||', ' || ').replace('-',' - ')
 
     sqllist = sql.split()
     # # sqllist = [i for i in sqllist if i]
@@ -356,10 +356,21 @@ def main(sql):
     flag_kw = 0  # 用于判断GROUP BY 和 ORDER BY
     flag_q = 0  # 用于判断字符串的双引号
     for i, str in enumerate(sqllist):
-        if str in keywords:
+        if flag_q == 1:
+            if str == '\"':
+                flag_q = 0
+        elif str == '\"' and flag_q == 0:
+            string_str = ''
+            while sqllist[i+1] != '\"':
+                string_str += sqllist[i+1]
+                i += 1
+            print(f'{string_str}\t<STRING,{string_str}>')
+            deal(f'{string_str}\t<STRING,{string_str}>')
+            flag_q = 1
+        elif str in keywords:
             print(f'{str}\t<KW,{keywords.get(str)}>')
             deal(f'{str}\t<KW,{keywords.get(str)}>')
-        elif (str in ('GROUP', 'ORDER')) and (sqllist[i + 1] == 'BY'):
+        elif (str in ('GROUP','ORDER')) and (sqllist[i+1] == 'BY'):
             str = str + ' BY'
             print(f'{str}\t<KW,{keywords.get(str)}>')
             deal(f'{str}\t<KW,{keywords.get(str)}>')
@@ -369,17 +380,6 @@ def main(sql):
         elif str in ops:
             print(f'{str}\t<OP,{ops.get(str)}>')
             deal(f'{str}\t<OP,{ops.get(str)}>')
-        elif flag_q == 1:
-            if str == '\"':
-                flag_q = 0
-        elif str == '\"' and flag_q == 0:
-            string_str = ''
-            while sqllist[i + 1] != '\"':
-                string_str += sqllist[i + 1]
-                i += 1
-            print(f'{string_str}\t<STR,{string_str}>')
-            deal(f'{string_str}\t<STR,{string_str}>')
-            flag_q = 1
         elif str in ses:
             print(f'{str}\t<SE,{ses.get(str)}>')
             deal(f'{str}\t<SE,{ses.get(str)}>')
@@ -397,11 +397,11 @@ def main(sql):
                     strlist = str.split('.')
                     print(f'{strlist[0]}\t<IDN,{strlist[0]}>')
                     deal(f'{strlist[0]}\t<IDN,{strlist[0]}>')
-                    print(f'.\t<OP,13>')
-                    deal(f'.\t<OP,13>')
+                    print(f'.\t<OP,16>')
+                    deal(f'.\t<OP,16>')
                     print(f'{strlist[1]}\t<IDN,{strlist[1]}>')
                     deal(f'{strlist[1]}\t<IDN,{strlist[1]}>')
-                elif type in (4, 8):
+                elif type in (4,8):
                     print(f'{str}\t<INT,{str}>')
                     deal(f'{str}\t<INT,{str}>')
                 elif type == 5:

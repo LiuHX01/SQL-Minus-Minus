@@ -100,7 +100,7 @@ def reduce(token: list, pred_anal_table: dict, start: str):
                     stack = ['#', start]
                     break
 
-                o_vn = todeal if todeal != '#' else '#'
+                o_vn = todeal if todeal != '#' else ''
                 if todeal == 'GROUPBY':
                     o_vn = 'GROUP BY'
                 if todeal == 'ORDERBY':
