@@ -68,7 +68,7 @@ def reduce(token: list, pred_anal_table: dict, start: str):
                     # 得到表项，得不到就是error
                     rule_num = pred_anal_table[(stack_top, todeal)][1]
                     l_right = pred_anal_table[(stack_top, todeal)][0]
-                    o_vn = todeal
+                    o_vn = todeal if todeal != '#' else '#'
                     if todeal == 'GROUPBY':
                         o_vn = 'GROUP BY'
                     if todeal == 'ORDERBY':
@@ -95,11 +95,12 @@ def reduce(token: list, pred_anal_table: dict, start: str):
             else:
                 # 栈底遇到token尾，规约结束
                 if stack_top == todeal == '#':
-                    print(f'{step}\t/\t{stack_top}#{todeal}\taccept')
+                    print(f'{step}\t/\t#\taccept')
+                    # print(f'{step}\t/\t{stack_top}#{todeal}\taccept')
                     stack = ['#', start]
                     break
 
-                o_vn = todeal
+                o_vn = todeal if todeal != '#' else '#'
                 if todeal == 'GROUPBY':
                     o_vn = 'GROUP BY'
                 if todeal == 'ORDERBY':
