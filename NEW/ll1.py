@@ -68,7 +68,7 @@ def reduce(token: list, pred_anal_table: dict, start: str):
                     # 得到表项，得不到就是error
                     rule_num = pred_anal_table[(stack_top, todeal)][1]
                     l_right = pred_anal_table[(stack_top, todeal)][0]
-                    o_vn = todeal if todeal != '#' else '#'
+                    o_vn = todeal if todeal != '#' else ''
                     if todeal == 'GROUPBY':
                         o_vn = 'GROUP BY'
                     if todeal == 'ORDERBY':
